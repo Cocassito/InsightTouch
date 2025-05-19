@@ -1,9 +1,5 @@
-function App() {
+const App: React.FC = () => {
+  return <div></div>;
+};
 
-  return (
-   
-    <> <h1>hello my friendsx</h1></>
-  )
-}
-
-export default App
+export default App;
