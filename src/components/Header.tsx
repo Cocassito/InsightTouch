@@ -1,12 +1,13 @@
 import React from "react";
-import Navbar from "./Navbar";
+import SectionNavbar from "./SectionNavbar";
+import { sections } from "../data/sections";
 
-type HeaderProps = {};
-
-const Header: React.FC<HeaderProps> = () => {
-  return <div>
-    <Navbar />
-  </div>;
+const Header: React.FC = () => {
+  return (
+    <div>
+      <SectionNavbar sections={sections} />
+    </div>
+  );
 };
 
 export default Header;
