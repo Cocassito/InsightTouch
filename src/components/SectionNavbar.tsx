@@ -129,7 +129,8 @@ const SectionNavbar: React.FC<SectionNavbarProps> = ({ sections }) => {
             }`}
             onClick={() => scrollToSection(section.id)}
           >
-            <h3>{section.label}</h3>
+            
+            <h3  >{section.label}</h3>
           </div>
         ))}
       </nav>
