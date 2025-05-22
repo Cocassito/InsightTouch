@@ -7,31 +7,30 @@ html, body {
 }
 
 #scroll-container {
-  position: fixed; /* fixe à la fenêtre */
+  position: fixed;
   top: 0;
   left: 0;
   width: 100vw;
   height: 100vh;
-  overflow-y: scroll; /* scroll "virtuel" */
+  overflow-y: scroll; 
   -webkit-overflow-scrolling: touch;
   z-index: 10;
 }
 
 #canvas-container {
-  position: sticky;
+  position: fixed;
   top: 0;
-  height: 100vh; /* taille visible */
+  height: 100vh;
   width: 100vw;
   pointer-events: none;
 }
 
 
-
-
 h1 {
   font-family: "Spectral", sans-serif;
   font-style: italic;
-  font-size: 2rem;
+  font-weight: 400;
+  font-size: 4rem;
 }
 
 h2 {
@@ -44,6 +43,12 @@ h3 {
   font-family: "Spectral", sans-serif;
   font-style: italic;
 
+  font-size: 1.5rem;
+}
+
+
+h4 {
+  font-weight: 200;
   font-size: 1.5rem;
 }
 

@@ -12,6 +12,7 @@ const Scene = forwardRef((_, ref) => {
         <div style={{ height: "200vh", pointerEvents: "none" }}></div>
       </div>
 
+      <DefaultSection />
       <div id="canvas-container">
         <Canvas
           style={{
@@ -25,10 +26,7 @@ const Scene = forwardRef((_, ref) => {
           <directionalLight position={[0, 0, 5]} color="white" />
           <Object3DModel ref={ref} />
         </Canvas>
-
-          <DefaultSection />
         <div className="sections-overlay">
-
           {sections.map(({ id, component: Component }) => (
             <Component key={id} id={id} />
           ))}

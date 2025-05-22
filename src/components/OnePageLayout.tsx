@@ -41,6 +41,7 @@ const OnePageLayout: React.FC = () => {
           }}
         />
       )}
+      
       <Scene ref={meshRef} />
     </div>
   );
