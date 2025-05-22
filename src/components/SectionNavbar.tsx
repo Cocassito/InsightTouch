@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { motion } from "framer-motion";
 import { useViewport } from "../hook/useViewport";
 
@@ -9,44 +9,21 @@ type Section = {
 
 type SectionNavbarProps = {
   sections: Section[];
+  activeSection: string | null;
+  onSectionClick?: (id: string) => void;
 };
 
-const SectionNavbar: React.FC<SectionNavbarProps> = ({ sections }) => {
-  const [activeSection, setActiveSection] = useState<string>("");
+const SectionNavbar: React.FC<SectionNavbarProps> = ({
+  sections,
+  activeSection,
+  onSectionClick,
+}) => {
   const [isMenuOpen, setIsMenuOpen] = useState<boolean>(false);
   const { isMobile } = useViewport();
 
-  useEffect(() => {
-    const handleScroll = () => {
-      const scrollPosition = window.scrollY + window.innerHeight / 2;
-
-      for (const section of sections) {
-        const element = document.getElementById(section.id);
-        if (element) {
-          const { top, bottom } = element.getBoundingClientRect();
-          const offsetTop = top + window.scrollY;
-          const offsetBottom = bottom + window.scrollY;
-
-          if (scrollPosition >= offsetTop && scrollPosition < offsetBottom) {
-            setActiveSection(section.id);
-            break;
-          }
-        }
-      }
-    };
-
-    window.addEventListener("scroll", handleScroll);
-    handleScroll();
-
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, [sections]);
-
-  const scrollToSection = (id: string) => {
-    const el = document.getElementById(id);
-    if (el) {
-      el.scrollIntoView({ behavior: "smooth" });
-    }
-    setIsMenuOpen(false);
+  const handleSectionClick = (id: string) => {
+    onSectionClick?.(id); // Notify parent
+    setIsMenuOpen(false); // Close mobile menu
   };
 
   const renderDesktopNavbar = () => (
@@ -57,7 +34,7 @@ const SectionNavbar: React.FC<SectionNavbarProps> = ({ sections }) => {
         return (
           <motion.button
             key={section.id}
-            onClick={() => scrollToSection(section.id)}
+            onClick={() => handleSectionClick(section.id)}
             className="sectionNavbar__button"
             initial={false}
             animate={{
@@ -90,19 +67,6 @@ const SectionNavbar: React.FC<SectionNavbarProps> = ({ sections }) => {
     </nav>
   );
 
-  useEffect(() => {
-    if (isMenuOpen) {
-      document.body.style.overflow = "hidden";
-    } else {
-      document.body.style.overflow = "";
-    }
-  
-    return () => {
-      document.body.style.overflow = "";
-    };
-  }, [isMenuOpen]);
-  
-
   const renderMobileNavbar = () => (
     <div className="sectionNavbarMobile">
       <button
@@ -115,7 +79,7 @@ const SectionNavbar: React.FC<SectionNavbarProps> = ({ sections }) => {
         <span className="burgerMenu__dot" />
         <span className="burgerMenu__dot" />
       </button>
-  
+
       <nav
         className={`sectionNavbarMobile__container fullscreen-slide ${
           isMenuOpen ? "open" : "closed"
@@ -127,16 +91,27 @@ const SectionNavbar: React.FC<SectionNavbarProps> = ({ sections }) => {
             className={`sectionNavbar__label ${
               activeSection === section.id ? "active" : ""
             }`}
-            onClick={() => scrollToSection(section.id)}
+            onClick={() => handleSectionClick(section.id)}
           >
-            
-            <h3  >{section.label}</h3>
+            <h3>{section.label}</h3>
           </div>
         ))}
       </nav>
     </div>
   );
-  
+
+  // Prevent body scroll when menu is open
+  React.useEffect(() => {
+    if (isMenuOpen) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "";
+    }
+
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [isMenuOpen]);
 
   return isMobile ? renderMobileNavbar() : renderDesktopNavbar();
 };

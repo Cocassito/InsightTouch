@@ -1,9 +1,13 @@
+import React from "react";
 import { SectionComponentProps } from "../../data/sections";
 
-const IntroSection = ({ id }: SectionComponentProps) => (
-  <section id={id} style={{ minHeight: "100vh", padding: "2rem" }}>
-    <h2>Intro</h2>
-  </section>
-);
+const IntroSection: React.FC<SectionComponentProps> = ({ id }) => {
+  return (
+      <div className="section" id={id}>
+        <h1>Bienvenue dans le intro</h1>
+        <p>Voici la première section de la page.</p>
+      </div>
+  );
+};
 
 export default IntroSection;

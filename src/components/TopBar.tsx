@@ -1,10 +1,12 @@
-import React from "react";
+import React, { useState } from "react";
 import { useViewport } from "../hook/useViewport";
 import SectionNavbar from "./SectionNavbar";
 import { sections } from "../data/sections";
 
 const TopBar: React.FC = () => {
   const { isMobile } = useViewport();
+    const [activeSection, setActiveSection] = useState<string>("");
+  
 
   return (
     <div className="topBar__container">
@@ -16,7 +18,15 @@ const TopBar: React.FC = () => {
           height="100%"
         />
       </div>
-    <SectionNavbar sections={sections} />
+    {isMobile && (
+        <SectionNavbar
+          sections={sections}
+          activeSection={activeSection}
+          onSectionClick={(id) => {
+            console.log("Clicked:", id);
+          }}
+        />
+      )}
     </div>
   );
 };

@@ -1,12 +1,32 @@
-* {
+html, body {
+  height: 100vh; /* empêcher le scroll de faire défiler la page */
+  overflow: hidden; /* pas de scroll visible */
   margin: 0;
-  padding: 0;
-}
-
-body {
   font-family: "Raleway", sans-serif;
   background-color: #21242b;
 }
+
+#scroll-container {
+  position: fixed; /* fixe à la fenêtre */
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  overflow-y: scroll; /* scroll "virtuel" */
+  -webkit-overflow-scrolling: touch;
+  z-index: 10;
+}
+
+#canvas-container {
+  position: sticky;
+  top: 0;
+  height: 100vh; /* taille visible */
+  width: 100vw;
+  pointer-events: none;
+}
+
+
+
 
 h1 {
   font-family: "Spectral", sans-serif;
@@ -26,3 +46,4 @@ h3 {
 
   font-size: 1.5rem;
 }
+
