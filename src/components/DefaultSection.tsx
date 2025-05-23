@@ -17,9 +17,9 @@ const DefaultSection: React.FC = () => (
       flexDirection: "column",
     }}
   >
-    <div style={{  width: "90%", height: "90%" }}>
+    <div style={{  width: "80%", height: "80%" }}>
       <img
-        src="/img/InsightTouchLogoBaseline.svg"
+        src="/img/LogoITBaseline.svg"
         alt="Logo InsightTouch"
         width="100%"
         height="100%"
