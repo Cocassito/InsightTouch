@@ -13,6 +13,12 @@ type SectionNavbarProps = {
   onSectionClick?: (id: string) => void;
 };
 
+const sectionProgressMap: Record<string, number> = {
+  section1: 0.2,
+  section2: 0.7,
+  // Ajoute d'autres sections ici
+};
+
 const SectionNavbar: React.FC<SectionNavbarProps> = ({
   sections,
   activeSection,
@@ -22,8 +28,19 @@ const SectionNavbar: React.FC<SectionNavbarProps> = ({
   const { isMobile } = useViewport();
 
   const handleSectionClick = (id: string) => {
-    onSectionClick?.(id); // Notify parent
-    setIsMenuOpen(false); // Close mobile menu
+    const container = document.getElementById("scroll-container");
+    const progress = sectionProgressMap[id];
+
+    if (container && progress != null) {
+      const maxScroll = container.scrollHeight - container.clientHeight;
+      container.scrollTo({
+        top: progress * maxScroll,
+        behavior: "smooth",
+      });
+    }
+
+    onSectionClick?.(id);
+    setIsMenuOpen(false);
   };
 
   const renderDesktopNavbar = () => (
@@ -100,14 +117,8 @@ const SectionNavbar: React.FC<SectionNavbarProps> = ({
     </div>
   );
 
-  // Prevent body scroll when menu is open
   React.useEffect(() => {
-    if (isMenuOpen) {
-      document.body.style.overflow = "hidden";
-    } else {
-      document.body.style.overflow = "";
-    }
-
+    document.body.style.overflow = isMenuOpen ? "hidden" : "";
     return () => {
       document.body.style.overflow = "";
     };

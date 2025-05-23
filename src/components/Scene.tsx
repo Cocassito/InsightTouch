@@ -8,7 +8,6 @@ const Scene = forwardRef((_, ref) => {
   return (
     <>
       <div id="scroll-container">
-        {/* Ce container défile mais ne fait rien bouger visuellement */}
         <div style={{ height: "200vh", pointerEvents: "none" }}></div>
       </div>
 
