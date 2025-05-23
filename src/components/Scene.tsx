@@ -7,9 +7,9 @@ import DefaultSection from "./DefaultSection";
 const Scene = forwardRef((_, ref) => {
   return (
     <>
-      <div id="scroll-container">
+      {/* <div id="scroll-container">
         <div style={{ height: "200vh", pointerEvents: "none" }}></div>
-      </div>
+      </div> */}
 
       <DefaultSection />
       <div id="canvas-container">

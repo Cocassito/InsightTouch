@@ -14,40 +14,64 @@ export const setupScrollTimeline = (
   setActiveSection: (id: string | null) => void
 ) => {
   // === Timeline pour le logo swap ===
-  const logoTimeline = gsap.timeline();
-  logoTimeline
-    .to(
-      "#logoIT",
-      {
-        opacity: 0,
-        x: -30,
-        duration: 0.5,
-        onComplete: () => {
-          gsap.set("#logoIT", { display: "none" });
-        },
+  const logoTopbarTimeline = gsap.timeline({
+    onStart: () => console.log("Animation lgo"),
+  });
+  logoTopbarTimeline
+    .to("#logoIT", {
+      ease: "power2.inOut",
+      opacity: 0,
+      x: -30,
+      duration: 0.5,
+      onComplete: () => {
+        gsap.set("#logoIT", { display: "none" });
       },
-      0
-    )
-    .set("#logoInsightTouch", { display: "block" }, 1)
-    .to("#logoInsightTouch", { opacity: 1, x: 0, duration: 1 }, 1);
-
-  // === Timeline pour le mesh 3D ===
-  const meshTimeline = gsap.timeline();
-  meshTimeline
-    .to(mesh.material, { opacity: 0, duration: 1 })
-    .to(mesh.material, { opacity: 1, duration: 1 })
-    .to(mesh.rotation, { y: Math.PI, duration: 1 }, 2)
-    .to(mesh.scale, { x: 1.5, y: 1.5, z: 1.5, duration: 1 }, 3);
+    })
+    .set("#logoInsightTouch", { display: "block" })
+    .to("#logoInsightTouch", {
+      opacity: 1,
+      x: 0,
+      ease: "power2.inOut",
+      duration: 0.5, // ← ici aussi
+    });
 
   // === Timeline pour la section défaut ===
-  const sectionDefaultTimeline = gsap.timeline();
-  sectionDefaultTimeline
-    .to("#defaultSection", { opacity: 1, y: 0, duration: 1 })
-    .to("#defaultSection", { opacity: 0, y: 0 });
+  const sectionDefaultTimeline = gsap.timeline({
+    onStart: () => console.log("Animation défaut"),
+  });
+  sectionDefaultTimeline.to("#defaultSection", {
+    opacity: 0,
+    y: 0,
+    duration: 0.5,
+  });
 
-  // === Timeline pour les sections ===
-  const sectionTimeline = gsap.timeline();
-  sectionTimeline.to("#section1", { opacity: 1, y: 0, delay: 0.5 });
+  // === Timeline pour le mesh 3D ===
+  const meshTimelineIntro = gsap.timeline();
+  meshTimelineIntro
+    .to(mesh.material, { opacity: 0, duration: 1 })
+    .addLabel("rotateAndScaleIntro")
+    .to(mesh.material, { opacity: 1, duration: 1 }, "rotateAndScaleIntro")
+    .to(mesh.rotation, { y: Math.PI, duration: 1 }, "rotateAndScaleIntro")
+    .to(
+      mesh.scale,
+      { x: 1.5, y: 1.5, z: 1.5, duration: 1 },
+      "rotateAndScaleIntro"
+    );
+
+  // === Timeline pour la section INTRO ===
+  const sectionTimelineIntro = gsap.timeline();
+  sectionTimelineIntro
+    .to("#section1", { opacity: 1, y: 0, duration: 1 })
+    .to("#BaseLineIntro", { opacity: 1, y: 0, duration: 1 }, "<")
+    .set("#BlocTextIntro", { display: "none" }, "<")
+    .to("#LogoBaselineIntro", { opacity: 0, duration: 1 })
+    .set("#LogoBaselineIntro", { display: "none", duration: 1 })
+    .set("#BlocTextIntro", { display: "block", opacity: 0, y: 10 })
+    .to("#BlocTextIntro", {
+      opacity: 1,
+      y: 0,
+      ease: "power2.inOut",
+    });
 
   // === Timeline principale ===
   const masterTimeline = gsap.timeline({
@@ -55,10 +79,10 @@ export const setupScrollTimeline = (
   });
 
   masterTimeline
-    .add(logoTimeline, 0)
-    .add(sectionDefaultTimeline, 0)
-    .add(sectionTimeline, 1)
-    .add(meshTimeline);
+    .add(sectionDefaultTimeline, "<")
+    .add(meshTimelineIntro, "<")
+    .add(sectionTimelineIntro, 1)
+    .add(logoTopbarTimeline, 2);
 
   // // === ScrollTrigger (optionnel) ===
   // const scrollTrigger = ScrollTrigger.create({
@@ -87,8 +111,8 @@ export const setupScrollTimeline = (
   // === Return global structuré ===
   return {
     masterTimeline,
-    logoTimeline,
-    meshTimeline,
-    sectionTimeline,
+    logoTopbarTimeline,
+    meshTimelineIntro,
+    sectionTimelineIntro,
   };
 };

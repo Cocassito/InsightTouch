@@ -1,9 +1,10 @@
-html, body {
+html,
+body {
   height: 100vh; /* empêcher le scroll de faire défiler la page */
   overflow: hidden; /* pas de scroll visible */
   margin: 0;
   font-family: "Raleway", sans-serif;
-  background-color: #21242b;
+  background-image: radial-gradient(#21242b, #18181b);
 }
 
 #scroll-container {
@@ -12,7 +13,7 @@ html, body {
   left: 0;
   width: 100vw;
   height: 100vh;
-  overflow-y: scroll; 
+  overflow-y: scroll;
   -webkit-overflow-scrolling: touch;
   z-index: 10;
 }
@@ -24,7 +25,6 @@ html, body {
   width: 100vw;
   pointer-events: none;
 }
-
 
 h1 {
   font-family: "Spectral", sans-serif;
@@ -46,9 +46,7 @@ h3 {
   font-size: 1.5rem;
 }
 
-
 h4 {
-  font-weight: 200;
+  font-weight: 400;
   font-size: 1.5rem;
 }
-

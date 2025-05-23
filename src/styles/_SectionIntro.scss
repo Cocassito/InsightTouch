@@ -1,0 +1,19 @@
+.SectionIntro{
+    &__container{
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        flex-direction: column;
+        padding: 20px;
+        color: #f4f6f7;
+    }
+    &__logoInsightTouch{
+        width: 40%;
+        height: auto;
+    }
+}
+
+#BaseLineIntro{
+    opacity: 0;
+  transform: translateY(20px);
+}
