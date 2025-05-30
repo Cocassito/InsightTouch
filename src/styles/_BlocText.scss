@@ -1,7 +1,7 @@
 .BlocText {
   &__container {
-    position: relative;
-    display: flex;
+    position: absolute;
+    right:100px;
     justify-content: center;
     align-items: center;    
     flex-direction: column;

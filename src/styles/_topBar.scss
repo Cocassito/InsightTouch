@@ -9,13 +9,13 @@
     padding: 0 24px;
     background-color: transparent;
     box-sizing: border-box;
-    box-shadow: 0px 0px 8px 2px #f4f6f7;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.5);
     z-index: 9999;
   }
 
   &__logoIT {
     width: 30px;
-    display: block; 
+    display: block;
     opacity: 1;
     transform: translateX(0);
     top: 0;
@@ -24,7 +24,7 @@
 
   &__logoInsightTouch {
     width: 160px;
-    display: none; 
+    display: none;
     opacity: 0;
     transform: translateX(30px);
     top: 0;

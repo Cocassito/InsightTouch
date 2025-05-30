@@ -6,9 +6,8 @@ import { useViewport } from "../hook/useViewport";
 import * as THREE from "three";
 
 import Scene from "./Scene";
-import { setupScrollTimeline } from "./ScrollAnimation";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
-import DefaultSection from "./DefaultSection";
+import { setupScrollTimeline } from "./Timeline";
 
 const OnePageLayout: React.FC = () => {
   const [activeSection, setActiveSection] = useState<string | null>(null);
@@ -19,7 +18,7 @@ const OnePageLayout: React.FC = () => {
     const interval = setInterval(() => {
       const mesh = meshRef.current?.getMesh();
       if (mesh) {
-        setupScrollTimeline(mesh, setActiveSection);
+        setupScrollTimeline(mesh, setActiveSection, isMobile);
         ScrollTrigger.refresh();
         clearInterval(interval);
       }

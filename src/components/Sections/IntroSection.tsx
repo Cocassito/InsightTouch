@@ -20,8 +20,18 @@ const IntroSection: React.FC<SectionComponentProps> = ({ id }) => {
         </h4>
       </div>
       <BlocText
-        id="BlocTextIntro"
-        title="Bonjour je suis un test"
+        id="BlocTextIntro1"
+        title="Bonjour je suis un test caca"
+        text="je suis un texte si long quemême moi jen ai marre d'crifrer c'et abbrrent azudis "
+      />
+       <BlocText
+        id="BlocTextIntro2"
+        title="Bonjour je suis un test AAAAAAAAAA"
+        text="je suis un texte si long quemême moi jen ai marre d'crifrer c'et abbrrent azudis "
+      />
+       <BlocText
+        id="BlocTextIntro3"
+        title="Bonjour je suis un test BBBBBBBBB"
         text="je suis un texte si long quemême moi jen ai marre d'crifrer c'et abbrrent azudis "
       />
     </div>

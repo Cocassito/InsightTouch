@@ -11,7 +11,7 @@ export const Object3DModel = forwardRef((_, ref) => {
   return (
   <mesh ref={meshRef} position={[0, 0, 0]}>
   <boxGeometry args={[1, 1, 1]} />
-  <meshPhongMaterial color="blue" transparent opacity={0} />
+  <meshPhongMaterial color="red" transparent opacity={0} />
 </mesh>
 
   );
