@@ -121,12 +121,7 @@ export const setupScrollTimeline = (
       x: isMobile ? 0 : -100,
       ease: "power2.inOut",
       duration: isMobile ? 0.5 : 1,
-    });
-
-  // === Timeline pour la section features ===
-  const featureSection = gsap.timeline();
-
-  featureSection
+    })
     .to(["#BlocTextIntro1", "#BlocTextIntro2", "#BlocTextIntro3"], {
       opacity: 0,
       x: -75,
@@ -138,8 +133,56 @@ export const setupScrollTimeline = (
         });
       },
     })
-    .to(["#BlocTextTitle", "#BlocTextText"], { opacity: 0 }, "<")
-    
+    .to(["#BlocTextTitle", "#BlocTextText"], { opacity: 0 }, "<");
+
+  // === Timeline pour la section features ===
+  const featureSection = gsap.timeline({
+    onStart: () => {
+      // Initialiser le SVG au début de l'animation
+      const graphPath = document.querySelector("#graphLine");
+      if (graphPath) {
+        const pathLength = (graphPath as SVGPathElement).getTotalLength();
+        gsap.set(graphPath, {
+          strokeDasharray: pathLength,
+          strokeDashoffset: pathLength,
+          opacity: 0,
+        });
+      }
+    },
+  });
+
+  featureSection
+    .to("#section2", { opacity: 1, y: 0, duration: isMobile ? 0.5 : 1 })
+    .to(mesh.position, { x: 2, y: 0, duration: 1 }, "<")
+
+    // Animation synchronisée du graphique et du cube
+    .addLabel("graphAnimation")
+    .to(
+      "#graphLine",
+      {
+        opacity: 1,
+        duration: 0.3,
+      },
+      "graphAnimation"
+    )
+    .to(
+      "#graphLine",
+      {
+        strokeDashoffset: 0,
+        duration: 2,
+        ease: "power2.inOut",
+      },
+      "graphAnimation+=0.1"
+    )
+    .to(
+      mesh.rotation,
+      {
+        y: Math.PI * 2,
+        duration: 2,
+        ease: "power2.inOut",
+      },
+      "graphAnimation"
+    );
 
   // === Timeline principale ===
   const masterTimeline = gsap.timeline({
