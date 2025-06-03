@@ -1,8 +1,9 @@
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { MotionPathPlugin } from "gsap/MotionPathPlugin";
 import * as THREE from "three";
 
-gsap.registerPlugin(ScrollTrigger);
+gsap.registerPlugin(ScrollTrigger, MotionPathPlugin);
 
 export const setupScrollTimeline = (
   mesh: THREE.Mesh,
@@ -50,7 +51,7 @@ export const setupScrollTimeline = (
 
   if (!isMobile) {
     meshTimelineIntro
-      .to(mesh.material, { opacity: 0, duration: 1 })
+      .to(mesh.material, { opacity: 1, duration: 1 })
       .addLabel("rotateAndScaleIntro")
       .to(mesh.material, { opacity: 1, duration: 1 }, "rotateAndScaleIntro")
       .to(mesh.rotation, { y: Math.PI, duration: 1 }, "rotateAndScaleIntro")
@@ -153,7 +154,7 @@ export const setupScrollTimeline = (
 
   featureSection
     .to("#section2", { opacity: 1, y: 0, duration: isMobile ? 0.5 : 1 })
-    .to(mesh.position, { x: 2, y: 0, duration: 1 }, "<")
+    .to(mesh.position, { x: 0, y: 0, duration: 1 }, "<")
 
     // Animation synchronisée du graphique et du cube
     .addLabel("graphAnimation")
@@ -182,6 +183,114 @@ export const setupScrollTimeline = (
         ease: "power2.inOut",
       },
       "graphAnimation"
+    )
+
+    // Animation du point avec pauses et textes
+    .addLabel("dotAnimation")
+    .to("#graphDot", { opacity: 1, duration: 0.3 })
+
+    // Premier segment (baissier)
+    .to("#graphDot", {
+      motionPath: {
+        path: "#graphLine",
+        align: "#graphLine",
+        autoRotate: true,
+        alignOrigin: [0.5, 0.5],
+        start: 0,
+        end: 0.33,
+      },
+      duration: 1,
+      ease: "power2.inOut",
+    })
+    .to(
+      "#trend1",
+      {
+        opacity: 1,
+        y: 0,
+        duration: 0.5,
+        ease: "power2.out",
+      },
+      ">"
+    )
+    .to(
+      mesh.rotation,
+      {
+        y: `+=${Math.PI / 3}`,
+        duration: 0.5,
+      },
+      "<"
+    )
+
+    // Deuxième segment (stable)
+    .to(
+      "#graphDot",
+      {
+        motionPath: {
+          path: "#graphLine",
+          align: "#graphLine",
+          autoRotate: true,
+          alignOrigin: [0.5, 0.5],
+          start: 0.33,
+          end: 0.66,
+        },
+        duration: 1,
+        ease: "power2.inOut",
+      },
+      "+=0.5"
+    )
+    .to(
+      "#trend2",
+      {
+        opacity: 1,
+        y: 0,
+        duration: 0.5,
+        ease: "power2.out",
+      },
+      ">"
+    )
+    .to(
+      mesh.rotation,
+      {
+        y: `+=${Math.PI / 3}`,
+        duration: 0.5,
+      },
+      "<"
+    )
+
+    // Troisième segment (haussier)
+    .to(
+      "#graphDot",
+      {
+        motionPath: {
+          path: "#graphLine",
+          align: "#graphLine",
+          autoRotate: true,
+          alignOrigin: [0.5, 0.5],
+          start: 0.66,
+          end: 1,
+        },
+        duration: 1,
+        ease: "power2.inOut",
+      },
+      "+=0.5"
+    )
+    .to(
+      "#trend3",
+      {
+        opacity: 1,
+        y: 0,
+        duration: 0.5,
+        ease: "power2.out",
+      },
+      ">"
+    )
+    .to(
+      mesh.rotation,
+      {
+        y: `+=${Math.PI / 3}`,
+        duration: 0.5,
+      },
+      "<"
     );
 
   // === Timeline principale ===
