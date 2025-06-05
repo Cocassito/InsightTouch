@@ -54,12 +54,7 @@ export const setupScrollTimeline = (
       .to(mesh.material, { opacity: 1, duration: 1 })
       .addLabel("rotateAndScaleIntro")
       .to(mesh.material, { opacity: 1, duration: 1 }, "rotateAndScaleIntro")
-      .to(mesh.rotation, { y: Math.PI, duration: 1 }, "rotateAndScaleIntro")
-      .to(
-        mesh.scale,
-        { x: 1.5, y: 1.5, z: 1.5, duration: 1 },
-        "rotateAndScaleIntro"
-      );
+      .to(mesh.rotation, { y: Math.PI, duration: 1 }, "rotateAndScaleIntro");
   } else {
     meshTimelineIntro
       .to(mesh.material, { opacity: 0.8, duration: 0.5 })
