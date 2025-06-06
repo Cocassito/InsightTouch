@@ -368,6 +368,57 @@ export const setupScrollTimeline = (
       "+=0.5"
     )
 
+    .add(() => {
+      model.traverse((node) => {
+        if (node instanceof THREE.Mesh && node.name === "Bille") {
+          const end = node.position.clone(); // position actuelle
+          // Reprendre le même segment que l'aller, mais inversé
+          const start = new THREE.Vector3(
+            node.position.x - 0.009,
+            node.position.y, // Y reste constant
+            node.position.z - 0.015
+          );
+          // Accentuation de la courbe : calcul du point de contrôle sur la perpendiculaire
+          const curveStrength = 1.2; // Même valeur que l'aller
+          const dx = end.x - start.x;
+          const dz = end.z - start.z;
+          // Vecteur perpendiculaire dans le plan XZ
+          const perp = new THREE.Vector2(-dz, dx).normalize();
+          // Milieu du segment
+          const mid = new THREE.Vector3(
+            (start.x + end.x) / 2,
+            start.y, // Y constant
+            (start.z + end.z) / 2
+          );
+          // Offset sur la perpendiculaire
+          const offset = 0.005 * curveStrength; // Même offset
+          const control = new THREE.Vector3(
+            mid.x + perp.x * offset,
+            start.y, // Y constant
+            mid.z + perp.y * offset
+          );
+          const tObj = { t: 0 };
+          gsap.to(tObj, {
+            t: 1,
+            duration: 1,
+            ease: "power1.inOut",
+            onUpdate: () => {
+              const t = tObj.t;
+              node.position.x =
+                (1 - t) * (1 - t) * end.x +
+                2 * (1 - t) * t * control.x +
+                t * t * start.x;
+              node.position.y = start.y; // Y ne change jamais
+              node.position.z =
+                (1 - t) * (1 - t) * end.z +
+                2 * (1 - t) * t * control.z +
+                t * t * start.z;
+            },
+          });
+        }
+      });
+    }, ">")
+
     .to(
       "#trend2",
       {
@@ -396,6 +447,57 @@ export const setupScrollTimeline = (
       },
       "+=0.5"
     )
+    // Animation de la bille sur une courbe vers la droite (même logique que le segment 1 mais direction opposée)
+    .add(() => {
+      model.traverse((node) => {
+        if (node instanceof THREE.Mesh && node.name === "Bille") {
+          const start = node.position.clone();
+          // Mouvement vers la droite : X positif, Z négatif
+          const end = new THREE.Vector3(
+            node.position.x + 0.009,
+            node.position.y, // Y reste constant
+            node.position.z - 0.015
+          );
+          // Accentuation de la courbe : calcul du point de contrôle sur la perpendiculaire (vers l'extérieur)
+          const curveStrength = 1.2;
+          const dx = end.x - start.x;
+          const dz = end.z - start.z;
+          // Vecteur perpendiculaire dans le plan XZ, inversé pour aller vers l'extérieur
+          const perp = new THREE.Vector2(dz, -dx).normalize();
+          // Milieu du segment
+          const mid = new THREE.Vector3(
+            (start.x + end.x) / 2,
+            start.y,
+            (start.z + end.z) / 2
+          );
+          // Offset sur la perpendiculaire
+          const offset = 0.005 * curveStrength;
+          const control = new THREE.Vector3(
+            mid.x + perp.x * offset,
+            start.y,
+            mid.z + perp.y * offset
+          );
+          const tObj = { t: 0 };
+          gsap.to(tObj, {
+            t: 1,
+            duration: 1,
+            ease: "power1.inOut",
+            onUpdate: () => {
+              const t = tObj.t;
+              node.position.x =
+                (1 - t) * (1 - t) * start.x +
+                2 * (1 - t) * t * control.x +
+                t * t * end.x;
+              node.position.y = start.y;
+              node.position.z =
+                (1 - t) * (1 - t) * start.z +
+                2 * (1 - t) * t * control.z +
+                t * t * end.z;
+            },
+          });
+        }
+      });
+    }, "<")
 
     .to(
       "#trend3",
@@ -406,7 +508,70 @@ export const setupScrollTimeline = (
         ease: "power2.out",
       },
       ">"
-    );
+    )
+    .to(
+      ["#graphLine", "#graphDot", "#trend1", "#trend2", "#trend3"],
+      {
+        opacity: 0,
+        duration: 0.5,
+        ease: "power2.inOut",
+        onComplete: () => {
+          // Optionnel : cacher les éléments après l'animation
+          gsap.set(["#graphLine", "#graphDot", "#trend1", "#trend2", "#trend3"], { display: "none" });
+        },
+      },
+      "+=0.5"
+    )
+    // 4e segment : retour de la bille à la position du segment 2 (avant le segment 3) avec arrondi
+    .add(() => {
+      model.traverse((node) => {
+        if (node instanceof THREE.Mesh && node.name === "Bille") {
+          // Position de départ : fin du segment 3
+          const start = node.position.clone();
+          // Position cible = position du segment 2 (avant le segment 3)
+          const end = new THREE.Vector3(
+            node.position.x - 0.009, // on annule le déplacement du segment 3
+            node.position.y,
+            node.position.z + 0.015 // on annule le déplacement du segment 3
+          );
+          // Arrondi : calcul du point de contrôle sur la perpendiculaire (même logique que les autres segments)
+          const curveStrength = 1.2;
+          const dx = end.x - start.x;
+          const dz = end.z - start.z;
+          // Vecteur perpendiculaire dans le plan XZ (vers l'extérieur du segment)
+          const perp = new THREE.Vector2(-dz, dx).normalize();
+          const mid = new THREE.Vector3(
+            (start.x + end.x) / 2,
+            start.y,
+            (start.z + end.z) / 2
+          );
+          const offset = 0.005 * curveStrength;
+          const control = new THREE.Vector3(
+            mid.x + perp.x * offset,
+            start.y,
+            mid.z + perp.y * offset
+          );
+          const tObj = { t: 0 };
+          gsap.to(tObj, {
+            t: 1,
+            duration: 1,
+            ease: "power1.inOut",
+            onUpdate: () => {
+              const t = tObj.t;
+              node.position.x =
+                (1 - t) * (1 - t) * start.x +
+                2 * (1 - t) * t * control.x +
+                t * t * end.x;
+              node.position.y = start.y;
+              node.position.z =
+                (1 - t) * (1 - t) * start.z +
+                2 * (1 - t) * t * control.z +
+                t * t * end.z;
+            },
+          });
+        }
+      });
+    }, ">");
 
   // === Timeline principale ===
   const masterTimeline = gsap.timeline({
