@@ -6,11 +6,84 @@ import * as THREE from "three";
 gsap.registerPlugin(ScrollTrigger, MotionPathPlugin);
 
 export const setupScrollTimeline = (
-  mesh: THREE.Mesh,
+  model: THREE.Object3D,
   setActiveSection: (id: string | null) => void,
   isMobile: boolean
 ) => {
-  const rotationProxy = { y: mesh.rotation.y };
+  console.log("Setting up timeline with model:", model);
+
+  const rotationProxy = { y: model.rotation.y };
+
+  // Fonction pour animer un mesh spécifique
+  const animateSingleMesh = (meshName: string, properties: any) => {
+    let meshFound = false;
+    model.traverse((node) => {
+      if (node instanceof THREE.Mesh && node.name === meshName) {
+        meshFound = true;
+        console.log(`Animating mesh: ${meshName}`);
+        if (Array.isArray(node.material)) {
+          node.material.forEach((mat) => {
+            gsap.to(mat, {
+              ...properties,
+              onStart: () => console.log(`Starting animation for ${meshName}`),
+              onUpdate: () =>
+                console.log(
+                  `Updating ${meshName}: ${JSON.stringify(properties)}`
+                ),
+            });
+          });
+        } else {
+          gsap.to(node.material, {
+            ...properties,
+            onStart: () => console.log(`Starting animation for ${meshName}`),
+            onUpdate: () =>
+              console.log(
+                `Updating ${meshName}: ${JSON.stringify(properties)}`
+              ),
+          });
+        }
+      }
+    });
+    if (!meshFound) {
+      console.warn(`Mesh "${meshName}" not found in model`);
+    }
+  };
+
+  // Fonction pour animer tous les matériaux du modèle
+  const animateMaterials = (properties: any) => {
+    console.log("Animating materials with properties:", properties);
+    let materialCount = 0;
+
+    model.traverse((node) => {
+      if (node instanceof THREE.Mesh) {
+        if (Array.isArray(node.material)) {
+          node.material.forEach((mat) => {
+            materialCount++;
+            gsap.to(mat, {
+              ...properties,
+              onStart: () =>
+                console.log(
+                  `Starting animation for material in array, opacity target: ${properties.opacity}`
+                ),
+              onUpdate: () => console.log(`Current opacity: ${mat.opacity}`),
+            });
+          });
+        } else {
+          materialCount++;
+          gsap.to(node.material, {
+            ...properties,
+            onStart: () =>
+              console.log(
+                `Starting animation for single material, opacity target: ${properties.opacity}`
+              ),
+            onUpdate: () =>
+              console.log(`Current opacity: ${node.material.opacity}`),
+          });
+        }
+      }
+    });
+    console.log(`Found ${materialCount} materials to animate`);
+  };
 
   // === Timeline pour le logo swap ===
   const logoTopbarTimeline = gsap.timeline({
@@ -35,7 +108,7 @@ export const setupScrollTimeline = (
       duration: 0.5,
     });
 
-  // === Timeline pour la section défaut ===
+  // === Timeline pour la section défaut (intro) ===
   const sectionDefaultTimeline = gsap.timeline({
     onStart: () => console.log("Animation défaut"),
   });
@@ -46,19 +119,46 @@ export const setupScrollTimeline = (
     duration: 0.5,
   });
 
-  // === Timeline pour la mesh 3D ===
+  // === Timeline pour la mesh 3D en intro ===
   const meshTimelineIntro = gsap.timeline();
 
   if (!isMobile) {
     meshTimelineIntro
-      .to(mesh.material, { opacity: 1, duration: 1 })
+
       .addLabel("rotateAndScaleIntro")
-      .to(mesh.material, { opacity: 1, duration: 1 }, "rotateAndScaleIntro")
-      .to(mesh.rotation, { y: Math.PI, duration: 1 }, "rotateAndScaleIntro");
+      .call(() =>
+        animateMaterials({
+          opacity: 1,
+          ease: "power2.inOut",
+          duration: 0.5,
+        })
+      )
+      .to(
+        model.scale,
+        { x: 1.5, y: 1.5, z: 1.5, duration: 1 },
+        "rotateAndScaleIntro"
+      )
+      .to(
+        model.rotation,
+        { x: 1.5, y: -1, duration: 1 },
+        "rotateAndScaleIntro"
+      );
   } else {
     meshTimelineIntro
-      .to(mesh.material, { opacity: 0.8, duration: 0.5 })
-      .to(mesh.material, { opacity: 1, duration: 0.5 });
+      .call(() =>
+        animateMaterials({
+          opacity: 0,
+          duration: 0,
+          ease: "power2.inOut",
+        })
+      )
+      .call(() =>
+        animateMaterials({
+          opacity: 1,
+          duration: 0.5,
+          ease: "power2.inOut",
+        })
+      );
   }
 
   // === Timeline pour la section INTRO/présentation global ===
@@ -87,7 +187,7 @@ export const setupScrollTimeline = (
       ease: "power2.inOut",
       duration: isMobile ? 0.5 : 1,
     })
-    .to(mesh.position, { x: isMobile ? -0.5 : -1, y: 0, duration: 1 }, "<")
+    .to(model.position, { x: isMobile ? -0.5 : -1, y: 0, duration: 1 }, "<")
 
     // Bloc 2
     .set("#BlocTextIntro2", { display: "flex", opacity: 0, y: 10 })
@@ -97,14 +197,14 @@ export const setupScrollTimeline = (
       ease: "power2.inOut",
       duration: isMobile ? 0.5 : 1,
     })
-    .to(mesh.position, { x: isMobile ? -1 : -2, y: 0, duration: 1 }, "<")
+    .to(model.position, { x: isMobile ? -1 : -2, y: 0, duration: 1 }, "<")
     .to(
       rotationProxy,
       {
         y: "+=0.3",
         duration: isMobile ? 0.5 : 1,
         onUpdate: () => {
-          mesh.rotation.y = rotationProxy.y;
+          model.rotation.y = rotationProxy.y;
         },
       },
       "<"
@@ -149,7 +249,8 @@ export const setupScrollTimeline = (
 
   featureSection
     .to("#section2", { opacity: 1, y: 0, duration: isMobile ? 0.5 : 1 })
-    .to(mesh.position, { x: 0, y: 0, duration: 1 }, "<")
+    .to(model.position, { x: 0, y: 0, duration: 1 }, "<")
+    .to(model.rotation, { x: 1.5, y: -1.55, duration: 1 }, "<")
 
     // Animation synchronisée du graphique et du cube
     .addLabel("graphAnimation")
@@ -170,15 +271,6 @@ export const setupScrollTimeline = (
       },
       "graphAnimation+=0.1"
     )
-    .to(
-      mesh.rotation,
-      {
-        y: Math.PI * 2,
-        duration: 2,
-        ease: "power2.inOut",
-      },
-      "graphAnimation"
-    )
 
     // Animation du point avec pauses et textes
     .addLabel("dotAnimation")
@@ -195,8 +287,58 @@ export const setupScrollTimeline = (
         end: 0.33,
       },
       duration: 1,
-      ease: "power2.inOut",
+      ease: "power1.inOut", // Easing plus doux
     })
+    .add(() => {
+      model.traverse((node) => {
+        if (node instanceof THREE.Mesh && node.name === "Bille") {
+          const start = node.position.clone();
+          const end = new THREE.Vector3(
+            node.position.x + 0.009,
+            node.position.y, // Y reste constant
+            node.position.z + 0.015
+          );
+          // Accentuation de la courbe : calcul du point de contrôle sur la perpendiculaire
+          const curveStrength = 1.2; // Augmentez cette valeur pour accentuer l'arrondi
+          const dx = end.x - start.x;
+          const dz = end.z - start.z;
+          // Vecteur perpendiculaire dans le plan XZ
+          const perp = new THREE.Vector2(-dz, dx).normalize();
+          // Milieu du segment
+          const mid = new THREE.Vector3(
+            (start.x + end.x) / 2,
+            start.y, // Y constant
+            (start.z + end.z) / 2
+          );
+          // Offset sur la perpendiculaire
+          const offset = 0.005 * curveStrength; // Ajustez pour plus d'arrondi
+          const control = new THREE.Vector3(
+            mid.x + perp.x * offset,
+            start.y, // Y constant
+            mid.z + perp.y * offset
+          );
+          const tObj = { t: 0 };
+          gsap.to(tObj, {
+            t: 1,
+            duration: 1,
+            ease: "power1.inOut",
+            onUpdate: () => {
+              const t = tObj.t;
+              node.position.x =
+                (1 - t) * (1 - t) * start.x +
+                2 * (1 - t) * t * control.x +
+                t * t * end.x;
+              node.position.y = start.y; // Y ne change jamais
+              node.position.z =
+                (1 - t) * (1 - t) * start.z +
+                2 * (1 - t) * t * control.z +
+                t * t * end.z;
+            },
+          });
+        }
+      });
+    }, "<")
+
     .to(
       "#trend1",
       {
@@ -206,14 +348,6 @@ export const setupScrollTimeline = (
         ease: "power2.out",
       },
       ">"
-    )
-    .to(
-      mesh.rotation,
-      {
-        y: `+=${Math.PI / 3}`,
-        duration: 0.5,
-      },
-      "<"
     )
 
     // Deuxième segment (stable)
@@ -229,10 +363,11 @@ export const setupScrollTimeline = (
           end: 0.66,
         },
         duration: 1,
-        ease: "power2.inOut",
+        ease: "power1.inOut", // Easing plus doux
       },
       "+=0.5"
     )
+
     .to(
       "#trend2",
       {
@@ -242,14 +377,6 @@ export const setupScrollTimeline = (
         ease: "power2.out",
       },
       ">"
-    )
-    .to(
-      mesh.rotation,
-      {
-        y: `+=${Math.PI / 3}`,
-        duration: 0.5,
-      },
-      "<"
     )
 
     // Troisième segment (haussier)
@@ -265,10 +392,11 @@ export const setupScrollTimeline = (
           end: 1,
         },
         duration: 1,
-        ease: "power2.inOut",
+        ease: "power1.inOut", // Easing plus doux
       },
       "+=0.5"
     )
+
     .to(
       "#trend3",
       {
@@ -278,14 +406,6 @@ export const setupScrollTimeline = (
         ease: "power2.out",
       },
       ">"
-    )
-    .to(
-      mesh.rotation,
-      {
-        y: `+=${Math.PI / 3}`,
-        duration: 0.5,
-      },
-      "<"
     );
 
   // === Timeline principale ===
@@ -294,9 +414,9 @@ export const setupScrollTimeline = (
   });
 
   masterTimeline
-    .add(sectionDefaultTimeline, "<")
-    .add(meshTimelineIntro, "<")
+    .add(sectionDefaultTimeline)
     .add(sectionTimelineIntro, 1)
+    .add(meshTimelineIntro, "<") // Démarrer exactement au même moment que sectionTimelineIntro
     .add(logoTopbarTimeline, 2)
     .add(featureSection);
 
