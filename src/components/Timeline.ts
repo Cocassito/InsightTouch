@@ -188,6 +188,15 @@ export const setupScrollTimeline = (
       duration: isMobile ? 0.5 : 1,
     })
     .to(model.position, { x: isMobile ? -0.5 : -1, y: 0, duration: 1 }, "<")
+    .to(
+      model.rotation,
+      {
+        x: 2, // Tour complet sur X
+        duration: 1,
+        ease: "power1.inOut",
+      },
+      "<"
+    )
 
     // Bloc 2
     .set("#BlocTextIntro2", { display: "flex", opacity: 0, y: 10 })
@@ -199,13 +208,13 @@ export const setupScrollTimeline = (
     })
     .to(model.position, { x: isMobile ? -1 : -2, y: 0, duration: 1 }, "<")
     .to(
-      rotationProxy,
+      model.rotation,
       {
-        y: "+=0.3",
-        duration: isMobile ? 0.5 : 1,
-        onUpdate: () => {
-          model.rotation.y = rotationProxy.y;
-        },
+        x: 2, // Tour complet sur X
+
+        z: 1,
+        duration: 1,
+        ease: "power1.inOut",
       },
       "<"
     )
@@ -252,7 +261,6 @@ export const setupScrollTimeline = (
     .to(model.position, { x: 0, y: 0, duration: 1 }, "<")
     .to(model.rotation, { x: 1.5, y: -1.55, duration: 1 }, "<")
 
-    // Animation synchronisée du graphique et du cube
     .addLabel("graphAnimation")
     .to(
       "#graphLine",
@@ -417,7 +425,7 @@ export const setupScrollTimeline = (
           });
         }
       });
-    }, ">")
+    }, "<")
 
     .to(
       "#trend2",
@@ -510,14 +518,32 @@ export const setupScrollTimeline = (
       ">"
     )
     .to(
-      ["#graphLine", "#graphDot", "#trend1", "#trend2", "#trend3"],
+      [
+        "#graphLine",
+        "#graphDot",
+        "#trend1",
+        "#trend2",
+        "#trend3",
+        "#trend__title",
+      ],
       {
         opacity: 0,
         duration: 0.5,
         ease: "power2.inOut",
         onComplete: () => {
           // Optionnel : cacher les éléments après l'animation
-          gsap.set(["#graphLine", "#graphDot", "#trend1", "#trend2", "#trend3"], { display: "none" });
+          gsap.set(
+            [
+              "#graphLine",
+              "#graphDot",
+              "#trend1",
+              "#trend2",
+              "#trend3",
+              "#trend__title",
+              "#trend__container",
+            ],
+            { display: "none" }
+          );
         },
       },
       "+=0.5"
@@ -571,7 +597,183 @@ export const setupScrollTimeline = (
           });
         }
       });
-    }, ">");
+    }, "<")
+
+    // Animation des vecteurs de portabilité - Phase 1 : Largeur et Longueur
+    .addLabel("portabilityAnimation")
+    // Initialisation des paths des vecteurs
+    .set(["#vectorWidth", "#vectorLength", "#vectorHeight"], {
+      opacity: 0,
+      strokeDasharray: function (i, el) {
+        return el.getTotalLength();
+      },
+      strokeDashoffset: function (i, el) {
+        return el.getTotalLength();
+      },
+    })
+    .set("#portability__container", { display: "flex" })
+
+    // Affichage du titre avec un léger délai
+    .set("#portability__container", { display: "flex" })
+    .to("#portability__title", {
+      opacity: 1,
+      y: 20,
+      duration: 0.7,
+      ease: "power2.out",
+    }, "<")
+
+    .to(
+      model.rotation,
+      {
+        z: 0,
+      },
+      ">"
+    )
+
+    // Phase 1 : Animation de la longueur
+    .to("#vectorLength", {
+      opacity: 1,
+      duration: 0.3,
+    })
+    .to("#vectorLength", {
+      strokeDashoffset: 0,
+      duration: 1,
+      ease: "power2.inOut",
+    })
+    .to(
+      "#portability__length",
+      {
+        opacity: 1,
+        scale: 1,
+        duration: 0.5,
+        ease: "back.out(1.7)",
+      },
+      ">-0.2"
+    )
+
+    // Pause courte pour la lecture
+    .to({}, { duration: 0.8 })
+
+    // Phase 2 : Animation de la largeur
+    .to("#vectorWidth", {
+      opacity: 1,
+      duration: 0.3,
+    })
+    .to("#vectorWidth", {
+      strokeDashoffset: 0,
+      duration: 1,
+      ease: "power2.inOut",
+    })
+    .to(
+      "#portability__width",
+      {
+        opacity: 1,
+        scale: 1,
+        duration: 0.5,
+        ease: "back.out(1.7)",
+      },
+      ">-0.2"
+    )
+
+    // Pause courte pour la lecture
+    .to({}, { duration: 0.8 })
+
+    // Disparition progressive des vecteurs longueur et largeur
+    .to(
+      [
+        "#vectorWidth",
+        "#vectorLength",
+        "#portability__width",
+        "#portability__length",
+      ],
+      {
+        opacity: 0,
+        duration: 0.8,
+        ease: "power2.inOut",
+      }
+    )
+    // Phase 3 : Rotation de l'objet 3D
+    .to(model.rotation, {
+      x: 0,
+      y: 0,
+      duration: 1.2,
+      ease: "power3.inOut",
+    })
+
+    // Pause courte après la rotation
+    .to({}, { duration: 0.3 })
+
+    // Phase 4 : Animation de la hauteur
+    .to("#vectorHeight", {
+      opacity: 1,
+      duration: 0.4,
+    })
+    .to("#vectorHeight", {
+      strokeDashoffset: 0,
+      duration: 1,
+      ease: "power2.inOut",
+    })
+    .to(
+      "#portability__height",
+      {
+        opacity: 1,
+        scale: 1,
+        duration: 0.5,
+        ease: "back.out(1.7)",
+      },
+      ">-0.2"
+    )
+
+    // Pause finale pour la lecture
+    .to({}, { duration: 1.5 })
+
+        // Affichage du texte de prise en main
+    .to("#portability__text", {
+      opacity: 1,
+      y: 0,
+      duration: 0.5,
+      ease: "power2.out", 
+    })
+
+    // Retour à la position initiale avec disparition progressive
+    .to(["#vectorHeight", "#portability__height"], {
+      opacity: 0,
+      duration: 0.8,
+      ease: "power2.inOut",
+    })
+
+    .to("#portability__text", {
+      opacity: 1,
+      y: 0,
+      duration: 0.5,
+      ease: "power2.out", 
+    })
+    .to(
+      model.rotation,
+      {
+        x: 1.5,
+        z: -2,
+        y: -1.5,
+        duration: 1.5,
+        ease: "power2.inOut",
+      },
+      "<"
+    )
+
+    
+    // Disparition finale du titre
+    .to(
+      "#portability__title",
+      {
+        opacity: 0,
+        duration: 0.5,
+        ease: "power2.inOut",
+        onComplete: () => {
+          gsap.set("#portability__container", { display: "none" });
+        },
+      },
+      ">-0.5"
+    );
 
   // === Timeline principale ===
   const masterTimeline = gsap.timeline({
@@ -581,7 +783,7 @@ export const setupScrollTimeline = (
   masterTimeline
     .add(sectionDefaultTimeline)
     .add(sectionTimelineIntro, 1)
-    .add(meshTimelineIntro, "<") // Démarrer exactement au même moment que sectionTimelineIntro
+    .add(meshTimelineIntro, "<")
     .add(logoTopbarTimeline, 2)
     .add(featureSection);
 

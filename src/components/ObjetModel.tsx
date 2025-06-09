@@ -81,6 +81,15 @@ export const Object3DModel = forwardRef((_, ref) => {
                 newMaterial.roughness = 0.2;
                 newMaterial.envMapIntensity = 1;
                 break;
+
+                 
+              case 'On':
+                console.log("Appliqué: Indice - Métal standard");
+                newMaterial.color.setHex(0x21242b);
+                newMaterial.metalness = 0.8;
+                newMaterial.roughness = 0.2;
+                newMaterial.envMapIntensity = 1;
+                break;
                 
               case 'Bille':
                 console.log("Appliqué: Bille - Métal brillant");

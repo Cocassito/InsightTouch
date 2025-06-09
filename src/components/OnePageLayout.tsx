@@ -29,8 +29,10 @@ const OnePageLayout: React.FC = () => {
 
   return (
     <div>
-  
+      <div className="background-pattern" />
+
       <Header />
+
       {!isMobile && (
         <SectionNavbar
           sections={sections}
@@ -40,7 +42,7 @@ const OnePageLayout: React.FC = () => {
           }}
         />
       )}
-      
+
       <Scene ref={meshRef} />
     </div>
   );

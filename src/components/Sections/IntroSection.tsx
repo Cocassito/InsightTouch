@@ -23,16 +23,19 @@ const IntroSection: React.FC<SectionComponentProps> = ({ id }) => {
         id="BlocTextIntro1"
         title="Bonjour je suis un test caca"
         text="je suis un texte si long quemême moi jen ai marre d'crifrer c'et abbrrent azudis "
+        right="100px"
       />
-       <BlocText
+      <BlocText
         id="BlocTextIntro2"
         title="Bonjour je suis un test AAAAAAAAAA"
         text="je suis un texte si long quemême moi jen ai marre d'crifrer c'et abbrrent azudis "
+        right="100px"
       />
-       <BlocText
+      <BlocText
         id="BlocTextIntro3"
         title="Bonjour je suis un test BBBBBBBBB"
         text="je suis un texte si long quemême moi jen ai marre d'crifrer c'et abbrrent azudis "
+        right="100px"
       />
     </div>
   );
