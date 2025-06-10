@@ -1,3 +1,4 @@
+import CasUsage from "../components/Sections/CasUsage";
 import FeaturesSection from "../components/Sections/FeaturesSection";
 import IntroSection from "../components/Sections/IntroSection";
 
@@ -14,5 +15,6 @@ export type Section = {
 export const sections = [
   { id: "section1", label: "Présentation", component: IntroSection },
   { id: "section2", label: "Fonctionnalité", component: FeaturesSection },
+  { id: "section3", label: "Cas d'usages", component: CasUsage },
 ];
 

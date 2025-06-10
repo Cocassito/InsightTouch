@@ -12,43 +12,6 @@ export const setupScrollTimeline = (
 ) => {
   console.log("Setting up timeline with model:", model);
 
-  const rotationProxy = { y: model.rotation.y };
-
-  // Fonction pour animer un mesh spécifique
-  const animateSingleMesh = (meshName: string, properties: any) => {
-    let meshFound = false;
-    model.traverse((node) => {
-      if (node instanceof THREE.Mesh && node.name === meshName) {
-        meshFound = true;
-        console.log(`Animating mesh: ${meshName}`);
-        if (Array.isArray(node.material)) {
-          node.material.forEach((mat) => {
-            gsap.to(mat, {
-              ...properties,
-              onStart: () => console.log(`Starting animation for ${meshName}`),
-              onUpdate: () =>
-                console.log(
-                  `Updating ${meshName}: ${JSON.stringify(properties)}`
-                ),
-            });
-          });
-        } else {
-          gsap.to(node.material, {
-            ...properties,
-            onStart: () => console.log(`Starting animation for ${meshName}`),
-            onUpdate: () =>
-              console.log(
-                `Updating ${meshName}: ${JSON.stringify(properties)}`
-              ),
-          });
-        }
-      }
-    });
-    if (!meshFound) {
-      console.warn(`Mesh "${meshName}" not found in model`);
-    }
-  };
-
   // Fonction pour animer tous les matériaux du modèle
   const animateMaterials = (properties: any) => {
     console.log("Animating materials with properties:", properties);
@@ -762,6 +725,15 @@ export const setupScrollTimeline = (
       },
     });
 
+  ////// TIMELINE POUR LA SECTION CAS D'USAGE /////////
+
+  const casUsageTimeline = gsap.timeline();
+  casUsageTimeline.to("#section3", {
+    opacity: 1,
+    y: 0,
+    duration: isMobile ? 0.5 : 1,
+  });
+
   // === Timeline principale ===
   const masterTimeline = gsap.timeline({
     onStart: () => console.log("Animation started"),
@@ -772,7 +744,8 @@ export const setupScrollTimeline = (
     .add(sectionTimelineIntro, 1)
     .add(meshTimelineIntro, "<")
     .add(logoTopbarTimeline, 2)
-    .add(featureSection);
+    .add(featureSection)
+    .add(casUsageTimeline);
 
   // === ScrollTrigger (optionnel) ===
   // const scrollTrigger = ScrollTrigger.create({
@@ -804,5 +777,6 @@ export const setupScrollTimeline = (
     meshTimelineIntro,
     sectionTimelineIntro,
     featureSection,
+    casUsageTimeline,
   };
 };
