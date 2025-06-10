@@ -227,6 +227,18 @@ export const setupScrollTimeline = (
       ease: "power2.inOut",
       duration: isMobile ? 0.5 : 1,
     })
+    .to(model.position, { x: isMobile ? -1 : -3, y: 0, duration: 1 }, "<")
+    .to(
+      model.rotation,
+      {
+        x: 2, // Tour complet sur X
+
+        z: -2,
+        duration: 1,
+        ease: "power1.inOut",
+      },
+      "<"
+    )
     .to(["#BlocTextIntro1", "#BlocTextIntro2", "#BlocTextIntro3"], {
       opacity: 0,
       x: -75,
@@ -259,7 +271,7 @@ export const setupScrollTimeline = (
   featureSection
     .to("#section2", { opacity: 1, y: 0, duration: isMobile ? 0.5 : 1 })
     .to(model.position, { x: 0, y: 0, duration: 1 }, "<")
-    .to(model.rotation, { x: 1.5, y: -1.55, duration: 1 }, "<")
+    .to(model.rotation, { x: 1.5, y: -1.55, z: 1, duration: 1 }, "<")
 
     .addLabel("graphAnimation")
     .to(
@@ -612,15 +624,20 @@ export const setupScrollTimeline = (
       },
     })
     .set("#portability__container", { display: "flex" })
+    .set("#portability__container__text", { display: "none" })
 
     // Affichage du titre avec un léger délai
     .set("#portability__container", { display: "flex" })
-    .to("#portability__title", {
-      opacity: 1,
-      y: 20,
-      duration: 0.7,
-      ease: "power2.out",
-    }, "<")
+    .to(
+      "#portability__title",
+      {
+        opacity: 1,
+        y: 20,
+        duration: 0.7,
+        ease: "power2.out",
+      },
+      "<"
+    )
 
     .to(
       model.rotation,
@@ -727,53 +744,23 @@ export const setupScrollTimeline = (
     // Pause finale pour la lecture
     .to({}, { duration: 1.5 })
 
-        // Affichage du texte de prise en main
-    .to("#portability__text", {
-      opacity: 1,
-      y: 0,
-      duration: 0.5,
-      ease: "power2.out", 
-    })
+    // Affichage du texte de prise en main
 
-    // Retour à la position initiale avec disparition progressive
     .to(["#vectorHeight", "#portability__height"], {
       opacity: 0,
       duration: 0.8,
       ease: "power2.inOut",
     })
 
-    .to("#portability__text", {
-      opacity: 1,
-      y: 0,
-      duration: 0.5,
-      ease: "power2.out", 
-    })
-    .to(
-      model.rotation,
-      {
-        x: 1.5,
-        z: -2,
-        y: -1.5,
-        duration: 1.5,
-        ease: "power2.inOut",
-      },
-      "<"
-    )
-
-    
     // Disparition finale du titre
-    .to(
-      "#portability__title",
-      {
-        opacity: 0,
-        duration: 0.5,
-        ease: "power2.inOut",
-        onComplete: () => {
-          gsap.set("#portability__container", { display: "none" });
-        },
+    .to("#portability__title", {
+      opacity: 0,
+      duration: 0.5,
+      ease: "power2.inOut",
+      onComplete: () => {
+        gsap.set("#portability__container", { display: "none" });
       },
-      ">-0.5"
-    );
+    });
 
   // === Timeline principale ===
   const masterTimeline = gsap.timeline({

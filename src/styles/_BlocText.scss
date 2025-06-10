@@ -1,7 +1,6 @@
 .BlocText {
   &__container {
     position: absolute;
-    right:100px;
     justify-content: center;
     align-items: center;    
     flex-direction: column;
@@ -16,5 +15,6 @@
     backdrop-filter: blur(10px);
     border: 1px solid rgba(255, 255, 255, 0.1);
     color: #f4f6f7;
+    opacity: 0;
   }
 }

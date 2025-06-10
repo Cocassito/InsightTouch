@@ -21,20 +21,20 @@ const IntroSection: React.FC<SectionComponentProps> = ({ id }) => {
       </div>
       <BlocText
         id="BlocTextIntro1"
-        title="Bonjour je suis un test caca"
-        text="je suis un texte si long quemême moi jen ai marre d'crifrer c'et abbrrent azudis "
+        title="La donnée à portée de main"
+        text="Explorez vos données de manière tactile et immédiate. InsightTouch transforme les graphiques en une expérience interactive accessible à tous."
         right="100px"
       />
       <BlocText
         id="BlocTextIntro2"
-        title="Bonjour je suis un test AAAAAAAAAA"
-        text="je suis un texte si long quemême moi jen ai marre d'crifrer c'et abbrrent azudis "
+        title="Compréhension intuitive"
+        text="Ressentez l'évolution des marchés grâce à notre système innovant de retour haptique. Une approche naturelle qui rend l'analyse financière plus accessible et immersive."
         right="100px"
       />
       <BlocText
         id="BlocTextIntro3"
-        title="Bonjour je suis un test BBBBBBBBB"
-        text="je suis un texte si long quemême moi jen ai marre d'crifrer c'et abbrrent azudis "
+        title="Confort"
+        text="Conçu pour s'adapter parfaitement à votre main, InsightTouch allie légèreté et ergonomie. Sa forme étudiée et ses dimensions optimisées permettent une prise en main naturelle pour des sessions d'analyse prolongées sans fatigue."
         right="100px"
       />
     </div>

@@ -85,7 +85,7 @@ const FeaturesSection: React.FC<SectionComponentProps> = ({ id }) => {
           style={{
             color: "#F4F6F7",
             position: "absolute",
-            top: "-100px",
+            top: "-75px",
             left: "50%",
             transform: "translateX(-50%)",
             opacity: 0,
@@ -180,12 +180,6 @@ const FeaturesSection: React.FC<SectionComponentProps> = ({ id }) => {
         >
           Hauteur: 2cm
         </span>
-        <BlocText
-          id="portability__text"
-          text=" Un objet léger et ergonomique qui tient parfaitement dans la main
-              pour une utilisation intuitive et confortable"
-          title="Prise en main"
-        />{" "}
       </div>
     </div>
   );
