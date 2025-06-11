@@ -592,7 +592,7 @@ export const setupScrollTimeline = (
     // Configuration initiale
     .set("#section3", { display: "flex", opacity: 1 })
     .set("#portability__container", { display: "block", opacity: 1 })
-    
+
     // Affichage du titre
     .to("#portability__title", {
       opacity: 1,
@@ -615,12 +615,16 @@ export const setupScrollTimeline = (
       duration: 1,
       ease: "power2.inOut",
     })
-    .to("#portability__length", {
-      opacity: 1,
-      scale: 1,
-      duration: 0.5,
-      ease: "back.out(1.7)",
-    }, ">-0.2")
+    .to(
+      "#portability__length",
+      {
+        opacity: 1,
+        scale: 1,
+        duration: 0.5,
+        ease: "back.out(1.7)",
+      },
+      ">-0.2"
+    )
 
     // Pause courte pour la lecture
     .to({}, { duration: 0.8 })
@@ -749,7 +753,7 @@ export const setupScrollTimeline = (
         }),
       [],
       "objectDisappear"
-    );
+    )
 
   ////// TIMELINE POUR LA SECTION CAS D'USAGE /////////
   const casUsageTimeline = gsap.timeline();
@@ -827,7 +831,46 @@ export const setupScrollTimeline = (
       duration: 1,
       ease: "power2.out",
     })
-    .to({}, { duration: 3 }); // Pause pour la lecture
+    .to({}, { duration: 3 }) // Pause pour la lecture
+
+.to("#section4", {opacity: 0, duration:0.5})
+
+
+.set("#section4", {display: "none"});
+
+  ////// TIMELINE POUR LA SECTION CONTACT /////////
+  const contactTimeline = gsap.timeline();
+
+  contactTimeline
+    .set("#section5", { display: "flex", opacity: 1 })
+    .set("#contact__container", { display: "flex" })
+    
+    // Animation du titre
+    .to("#contact__title", {
+      opacity: 1,
+      y: 0,
+      duration: 0.7,
+      ease: "power2.out"
+    })
+    
+    // Animation du contenu
+    .to("#contact__content", {
+      opacity: 1,
+      y: 0,
+      duration: 0.7,
+      ease: "power2.out"
+    }, ">-0.3")
+    
+    // Animation du CTA
+    .to("#contact__cta", {
+      opacity: 1,
+      y: 0,
+      duration: 0.7,
+      ease: "power2.out"
+    }, ">-0.3")
+    
+    // Pause pour la lecture
+    .to({}, { duration: 3 });
 
   // === Timeline principale ===
   const masterTimeline = gsap.timeline({
@@ -841,7 +884,8 @@ export const setupScrollTimeline = (
     .add(logoTopbarTimeline, 2)
     .add(featureSection)
     .add(dimensionTimeline)
-    .add(casUsageTimeline);
+    .add(casUsageTimeline)
+    .add(contactTimeline);
 
   // === ScrollTrigger (optionnel) ===
   // const scrollTrigger = ScrollTrigger.create({
