@@ -1,6 +1,5 @@
 import React from "react";
 import { SectionComponentProps } from "../../data/sections";
-import BlocText from "../BlocText";
 
 const FeaturesSection: React.FC<SectionComponentProps> = ({ id }) => {
   return (

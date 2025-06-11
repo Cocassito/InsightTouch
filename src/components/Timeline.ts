@@ -723,16 +723,109 @@ export const setupScrollTimeline = (
       onComplete: () => {
         gsap.set("#portability__container", { display: "none" });
       },
-    });
+    })
+
+    // Animation de disparition douce de l'objet 3D
+    .addLabel("objectDisappear")
+    .to(model.rotation, {
+      x: model.rotation.x + Math.PI / 4,
+      y: model.rotation.y + Math.PI / 6,
+      z: model.rotation.z + Math.PI / 8,
+      duration: 2,
+      ease: "power1.inOut"
+    }, "objectDisappear")
+    .to(model.scale, {
+      x: 0.5,
+      y: 0.5,
+      z: 0.5,
+      duration: 2,
+      ease: "power1.inOut"
+    }, "objectDisappear")
+    .call(() => 
+      animateMaterials({
+        opacity: 0,
+        duration: 2,
+        ease: "power1.inOut"
+      })
+    , [], "objectDisappear");
 
   ////// TIMELINE POUR LA SECTION CAS D'USAGE /////////
-
   const casUsageTimeline = gsap.timeline();
-  casUsageTimeline.to("#section3", {
-    opacity: 1,
-    y: 0,
-    duration: isMobile ? 0.5 : 1,
-  });
+  
+  casUsageTimeline
+    // Initialisation
+    .set(["#casUsage2", "#casUsage3"], {
+      display: "none",
+      opacity: 0,
+      x: 50
+    })
+    .set("#casUsage1", {
+      opacity: 0,
+      x: 50
+    })
+
+    // Animation de la section
+    .to("#section3", {
+      opacity: 1,
+      y: 0,
+      duration: isMobile ? 0.5 : 1,
+    })
+
+    // Premier cas d'usage (Analyse)
+    .to("#casUsage1", {
+      display: "flex",
+      opacity: 1,
+      x: 0,
+      duration: 1,
+      ease: "power2.out"
+    })
+    .to({}, { duration: 3 }) // Pause pour la lecture
+
+    // Transition vers le deuxième cas (Trading)
+    .to("#casUsage1", {
+      opacity: 0,
+      x: -50,
+      duration: 0.8,
+      ease: "power2.in",
+      onComplete: () => {
+        gsap.set("#casUsage1", { display: "none" });
+      }
+    })
+    .set("#casUsage2", { 
+      display: "flex",
+      opacity: 0,
+      x: 50
+    })
+    .to("#casUsage2", {
+      opacity: 1,
+      x: 0,
+      duration: 1,
+      ease: "power2.out"
+    })
+    .to({}, { duration: 3 }) // Pause pour la lecture
+
+    // Transition vers le troisième cas (Education)
+    .to("#casUsage2", {
+      opacity: 0,
+      x: -50,
+      duration: 0.8,
+      ease: "power2.in",
+      onComplete: () => {
+        gsap.set("#casUsage2", { display: "none" });
+      }
+    })
+    .set("#casUsage3", {
+      display: "flex",
+      opacity: 0,
+      x: 50
+    })
+    .to("#casUsage3", {
+      opacity: 1,
+      x: 0,
+      duration: 1,
+      ease: "power2.out"
+    })
+    .to({}, { duration: 3 }); // Pause pour la lecture
 
   // === Timeline principale ===
   const masterTimeline = gsap.timeline({
