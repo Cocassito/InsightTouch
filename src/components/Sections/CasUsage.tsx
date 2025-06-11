@@ -14,9 +14,9 @@ const CasUsage: React.FC<SectionComponentProps> = ({ id }) => {
           <div className="text-content">
             <h3>Analyse de données</h3>
             <p>
-              Explorez vos données financières d'une manière totalement nouvelle. 
-              InsightTouch permet aux analystes de ressentir physiquement les tendances
-              et variations du marché, offrant une dimension supplémentaire à l'analyse traditionnelle.
+              Explorez vos données statistiques d'une manière totalement nouvelle. 
+              InsightTouch permet de ressentir physiquement les tendances et variations
+              de vos graphiques, ajoutant une dimension sensorielle à l'analyse mathématique.
             </p>
           </div>
         </div>
@@ -24,11 +24,12 @@ const CasUsage: React.FC<SectionComponentProps> = ({ id }) => {
         <div className="CasUsage__case" id="casUsage2">
           <img src="/img/tradingCasUsage.jpg" alt="Trading et veille" />
           <div className="text-content">
-            <h3>Trading et veille de marché</h3>
+            <h3>Visualisation scientifique</h3>
             <p>
-              Restez connecté aux mouvements du marché en temps réel. La réponse haptique 
-              d'InsightTouch vous alerte instantanément des changements significatifs, 
-              vous permettant de réagir plus rapidement aux opportunités.
+              Explorez des données scientifiques complexes de manière intuitive. 
+              La réponse haptique d'InsightTouch vous permet de mieux comprendre 
+              les variations et les tendances dans vos données de recherche, 
+              offrant une nouvelle perspective dans l'analyse scientifique.
             </p>
           </div>
         </div>
@@ -38,9 +39,10 @@ const CasUsage: React.FC<SectionComponentProps> = ({ id }) => {
           <div className="text-content">
             <h3>Formation et éducation</h3>
             <p>
-              Rendez l'apprentissage des marchés financiers plus accessible et intuitif. 
+              Rendez l'apprentissage des mathématiques plus accessible et intuitif. 
               InsightTouch offre une nouvelle approche pédagogique qui facilite la 
-              compréhension des concepts financiers pour les étudiants et les nouveaux traders.
+              compréhension des graphiques et des fonctions pour les élèves, transformant
+              l'apprentissage en une expérience interactive et ludique.
             </p>
           </div>
         </div>
