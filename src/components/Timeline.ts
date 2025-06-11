@@ -572,43 +572,38 @@ export const setupScrollTimeline = (
           });
         }
       });
-    }, "<")
+    }, "<");
 
-    // Animation des vecteurs de portabilité - Phase 1 : Largeur et Longueur
+  ////// TIMELINE POUR LA SECTION Dimension /////////
+
+  const dimensionTimeline = gsap.timeline();
+  dimensionTimeline
     .addLabel("portabilityAnimation")
     // Initialisation des paths des vecteurs
     .set(["#vectorWidth", "#vectorLength", "#vectorHeight"], {
       opacity: 0,
-      strokeDasharray: function (i, el) {
+      strokeDasharray: function (_i: number, el: SVGPathElement) {
         return el.getTotalLength();
       },
-      strokeDashoffset: function (i, el) {
+      strokeDashoffset: function (_i: number, el: SVGPathElement) {
         return el.getTotalLength();
       },
     })
-    .set("#portability__container", { display: "flex" })
-    .set("#portability__container__text", { display: "none" })
+    // Configuration initiale
+    .set("#section3", { display: "flex", opacity: 1 })
+    .set("#portability__container", { display: "block", opacity: 1 })
+    
+    // Affichage du titre
+    .to("#portability__title", {
+      opacity: 1,
+      y: 20,
+      duration: 0.7,
+      ease: "power2.out",
+    })
 
-    // Affichage du titre avec un léger délai
-    .set("#portability__container", { display: "flex" })
-    .to(
-      "#portability__title",
-      {
-        opacity: 1,
-        y: 20,
-        duration: 0.7,
-        ease: "power2.out",
-      },
-      "<"
-    )
-
-    .to(
-      model.rotation,
-      {
-        z: 0,
-      },
-      ">"
-    )
+    .to(model.rotation, {
+      z: 0,
+    })
 
     // Phase 1 : Animation de la longueur
     .to("#vectorLength", {
@@ -620,16 +615,12 @@ export const setupScrollTimeline = (
       duration: 1,
       ease: "power2.inOut",
     })
-    .to(
-      "#portability__length",
-      {
-        opacity: 1,
-        scale: 1,
-        duration: 0.5,
-        ease: "back.out(1.7)",
-      },
-      ">-0.2"
-    )
+    .to("#portability__length", {
+      opacity: 1,
+      scale: 1,
+      duration: 0.5,
+      ease: "back.out(1.7)",
+    }, ">-0.2")
 
     // Pause courte pour la lecture
     .to({}, { duration: 0.8 })
@@ -727,45 +718,56 @@ export const setupScrollTimeline = (
 
     // Animation de disparition douce de l'objet 3D
     .addLabel("objectDisappear")
-    .to(model.rotation, {
-      x: model.rotation.x + Math.PI / 4,
-      y: model.rotation.y + Math.PI / 6,
-      z: model.rotation.z + Math.PI / 8,
-      duration: 2,
-      ease: "power1.inOut"
-    }, "objectDisappear")
-    .to(model.scale, {
-      x: 0.5,
-      y: 0.5,
-      z: 0.5,
-      duration: 2,
-      ease: "power1.inOut"
-    }, "objectDisappear")
-    .call(() => 
-      animateMaterials({
-        opacity: 0,
+    .to(
+      model.rotation,
+      {
+        x: model.rotation.x + Math.PI / 4,
+        y: model.rotation.y + Math.PI / 6,
+        z: model.rotation.z + Math.PI / 8,
         duration: 2,
-        ease: "power1.inOut"
-      })
-    , [], "objectDisappear");
+        ease: "power1.inOut",
+      },
+      "objectDisappear"
+    )
+    .to(
+      model.scale,
+      {
+        x: 0.5,
+        y: 0.5,
+        z: 0.5,
+        duration: 2,
+        ease: "power1.inOut",
+      },
+      "objectDisappear"
+    )
+    .call(
+      () =>
+        animateMaterials({
+          opacity: 0,
+          duration: 2,
+          ease: "power1.inOut",
+        }),
+      [],
+      "objectDisappear"
+    );
 
   ////// TIMELINE POUR LA SECTION CAS D'USAGE /////////
   const casUsageTimeline = gsap.timeline();
-  
+
   casUsageTimeline
     // Initialisation
     .set(["#casUsage2", "#casUsage3"], {
       display: "none",
       opacity: 0,
-      x: 50
+      x: 50,
     })
     .set("#casUsage1", {
       opacity: 0,
-      x: 50
+      x: 50,
     })
 
     // Animation de la section
-    .to("#section3", {
+    .to("#section4", {
       opacity: 1,
       y: 0,
       duration: isMobile ? 0.5 : 1,
@@ -777,7 +779,7 @@ export const setupScrollTimeline = (
       opacity: 1,
       x: 0,
       duration: 1,
-      ease: "power2.out"
+      ease: "power2.out",
     })
     .to({}, { duration: 3 }) // Pause pour la lecture
 
@@ -789,18 +791,18 @@ export const setupScrollTimeline = (
       ease: "power2.in",
       onComplete: () => {
         gsap.set("#casUsage1", { display: "none" });
-      }
+      },
     })
-    .set("#casUsage2", { 
+    .set("#casUsage2", {
       display: "flex",
       opacity: 0,
-      x: 50
+      x: 50,
     })
     .to("#casUsage2", {
       opacity: 1,
       x: 0,
       duration: 1,
-      ease: "power2.out"
+      ease: "power2.out",
     })
     .to({}, { duration: 3 }) // Pause pour la lecture
 
@@ -812,18 +814,18 @@ export const setupScrollTimeline = (
       ease: "power2.in",
       onComplete: () => {
         gsap.set("#casUsage2", { display: "none" });
-      }
+      },
     })
     .set("#casUsage3", {
       display: "flex",
       opacity: 0,
-      x: 50
+      x: 50,
     })
     .to("#casUsage3", {
       opacity: 1,
       x: 0,
       duration: 1,
-      ease: "power2.out"
+      ease: "power2.out",
     })
     .to({}, { duration: 3 }); // Pause pour la lecture
 
@@ -838,6 +840,7 @@ export const setupScrollTimeline = (
     .add(meshTimelineIntro, "<")
     .add(logoTopbarTimeline, 2)
     .add(featureSection)
+    .add(dimensionTimeline)
     .add(casUsageTimeline);
 
   // === ScrollTrigger (optionnel) ===
@@ -870,6 +873,7 @@ export const setupScrollTimeline = (
     meshTimelineIntro,
     sectionTimelineIntro,
     featureSection,
+    dimensionTimeline,
     casUsageTimeline,
   };
 };
