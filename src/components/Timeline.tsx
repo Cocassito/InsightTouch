@@ -10,12 +10,11 @@ export const setupScrollTimeline = (
   setActiveSection: (id: string | null) => void,
   isMobile: boolean
 ) => {
-  console.log("Setting up timeline with model:", model);
-
   // Fonction pour animer tous les matériaux du modèle
   const animateMaterials = (properties: any) => {
-    console.log("Animating materials with properties:", properties);
     let materialCount = 0;
+
+
 
     model.traverse((node) => {
       if (node instanceof THREE.Mesh) {
@@ -24,34 +23,20 @@ export const setupScrollTimeline = (
             materialCount++;
             gsap.to(mat, {
               ...properties,
-              onStart: () =>
-                console.log(
-                  `Starting animation for material in array, opacity target: ${properties.opacity}`
-                ),
-              onUpdate: () => console.log(`Current opacity: ${mat.opacity}`),
             });
           });
         } else {
           materialCount++;
           gsap.to(node.material, {
             ...properties,
-            onStart: () =>
-              console.log(
-                `Starting animation for single material, opacity target: ${properties.opacity}`
-              ),
-            onUpdate: () =>
-              console.log(`Current opacity: ${node.material.opacity}`),
           });
         }
       }
     });
-    console.log(`Found ${materialCount} materials to animate`);
   };
 
   // === Timeline pour le logo swap ===
-  const logoTopbarTimeline = gsap.timeline({
-    onStart: () => console.log("Animation logo"),
-  });
+  const logoTopbarTimeline = gsap.timeline();
 
   logoTopbarTimeline
     .to("#logoIT", {
@@ -72,9 +57,7 @@ export const setupScrollTimeline = (
     });
 
   // === Timeline pour la section défaut (intro) ===
-  const sectionDefaultTimeline = gsap.timeline({
-    onStart: () => console.log("Animation défaut"),
-  });
+  const sectionDefaultTimeline = gsap.timeline();
 
   sectionDefaultTimeline.to("#defaultSection", {
     opacity: 0,
@@ -753,7 +736,7 @@ export const setupScrollTimeline = (
         }),
       [],
       "objectDisappear"
-    )
+    );
 
   ////// TIMELINE POUR LA SECTION CAS D'USAGE /////////
   const casUsageTimeline = gsap.timeline();
@@ -833,10 +816,9 @@ export const setupScrollTimeline = (
     })
     .to({}, { duration: 3 }) // Pause pour la lecture
 
-.to("#section4", {opacity: 0, duration:0.5})
+    .to("#section4", { opacity: 0, duration: 0.5 })
 
-
-.set("#section4", {display: "none"});
+    .set("#section4", { display: "none" });
 
   ////// TIMELINE POUR LA SECTION CONTACT /////////
   const contactTimeline = gsap.timeline();
@@ -844,33 +826,44 @@ export const setupScrollTimeline = (
   contactTimeline
     .set("#section5", { display: "flex", opacity: 1 })
     .set("#contact__container", { display: "flex" })
-    
+
     // Animation du titre
     .to("#contact__title", {
       opacity: 1,
       y: 0,
       duration: 0.7,
-      ease: "power2.out"
+      ease: "power2.out",
     })
-    
+
     // Animation du contenu
-    .to("#contact__content", {
-      opacity: 1,
-      y: 0,
-      duration: 0.7,
-      ease: "power2.out"
-    }, ">-0.3")
-    
+    .to(
+      "#contact__content",
+      {
+        opacity: 1,
+        y: 0,
+        duration: 0.7,
+        ease: "power2.out",
+      },
+      ">-0.3"
+    )
+
     // Animation du CTA
-    .to("#contact__cta", {
-      opacity: 1,
-      y: 0,
-      duration: 0.7,
-      ease: "power2.out"
-    }, ">-0.3")
-    
+    .to(
+      "#contact__cta",
+      {
+        opacity: 1,
+        y: 0,
+        duration: 0.7,
+        ease: "power2.out",
+      },
+      ">-0.3"
+    )
+
     // Pause pour la lecture
-    .to({}, { duration: 3 });
+    .to({}, { duration: 3 })
+    
+    
+    ;
 
   // === Timeline principale ===
   const masterTimeline = gsap.timeline({
@@ -887,31 +880,20 @@ export const setupScrollTimeline = (
     .add(casUsageTimeline)
     .add(contactTimeline);
 
-  // === ScrollTrigger (optionnel) ===
-  // const scrollTrigger = ScrollTrigger.create({
-  //   animation: masterTimeline,
-  //   trigger: "#scroll-container",
-  //   scroller: "#scroll-container",
-  //   start: "top top",
-  //   end: "bottom top",
-  //   scrub: 2,
-  //   markers: true,
-  //   onUpdate: (self) => {
-  //     const progress = self.progress;
-  //     if (progress === 0) {
-  //       gsap.set("#logoInsightTouch", { display: "none", opacity: 0 });
-  //       gsap.set("#logoIT", { display: "block", opacity: 0, x: -30 });
-  //       gsap.to("#logoIT", { x: 0, opacity: 1, duration: 0.5 });
-  //       setActiveSection(null);
-  //     } else if (progress < 0.5) {
-  //       setActiveSection("section1");
-  //     } else {
-  //       setActiveSection("section2");
-  //     }
-  //   },
-  // });
+  const scrollTrigger = ScrollTrigger.create({
+  animation: masterTimeline,
+  trigger: "#scroll-container",
+  scroller: "#scroll-container", // 👍 INDISPENSABLE
+  start: "top top",
+  end: `+=${masterTimeline.duration() * 100}px`, // adapte la longueur du scroll
+  scrub: 1,
+  markers: true,
+});
+  console.log(masterTimeline.duration()); // pour voir combien de scroll il te faut
+  ScrollTrigger.refresh(); // 👈 Important ici
 
   return {
+    scrollTrigger,
     masterTimeline,
     logoTopbarTimeline,
     meshTimelineIntro,

@@ -6,17 +6,28 @@ body {
   font-family: "Raleway", sans-serif;
   background-color: #21242b;
 }
-
 #scroll-container {
   position: fixed;
-  top: 0;
-  left: 0;
+  top: 0; left: 0;
   width: 100vw;
   height: 100vh;
   overflow-y: scroll;
-  -webkit-overflow-scrolling: touch;
-  z-index: 10;
+  z-index: 9999;
 }
+
+#scroll-content {
+  height: 7000px; /* simulate scroll length */
+  pointer-events: none; /* optionnel, éviter interactions */
+}
+
+#canvas-container {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100vw;
+  height: 100vh;
+  pointer-events: none;
+}
+
 
 #canvas-container {
   position: fixed;

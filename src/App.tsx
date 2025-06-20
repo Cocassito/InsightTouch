@@ -2,6 +2,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import OnePageLayout from "./components/OnePageLayout";
 
 function App() {
+  
   return (
     <BrowserRouter>
       <Routes>

@@ -29,7 +29,9 @@ const OnePageLayout: React.FC = () => {
 
   return (
     <div>
-      <div className="background-pattern" />
+      <div id="scroll-container">
+        <div id="scroll-content" />
+      </div>
 
       <Header />
 
