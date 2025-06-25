@@ -802,7 +802,7 @@ export const setupScrollTimeline = (
     start: "top top",
     end: `+=${masterTimeline.duration() * 1000}px`,
     scrub: 1,
-    markers: true,
+    markers: false,
   });
   console.log(masterTimeline.duration());
   ScrollTrigger.refresh();

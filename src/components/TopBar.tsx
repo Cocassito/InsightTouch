@@ -22,6 +22,13 @@ const TopBar: React.FC = () => {
           <img src="/img/ITLogo.svg" alt="Logo IT" width="100%" height="100%" />
         </div>
 
+        {/* <div className="topBar__lien__container">
+          <a href="">Home</a>
+          <a href="">Système</a>
+          <a href="">Cas d'usages</a>
+          <a href="">Contact</a>
+        </div> */}
+
         {/* {isMobile && (
           <SectionNavbar
             sections={sections}

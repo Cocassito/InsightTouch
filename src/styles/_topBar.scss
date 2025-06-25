@@ -30,4 +30,17 @@
     top: 0;
     left: 0;
   }
+
+  &__lien__container {
+    display: flex;
+    align-items: center;
+    margin-right: 24px;
+    gap: 24px;
+  }
+
+ 
 }
+ a {
+    text-decoration: none;
+    color:#F1F1F1
+  }
