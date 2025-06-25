@@ -2,19 +2,41 @@ import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { MotionPathPlugin } from "gsap/MotionPathPlugin";
 import * as THREE from "three";
+import { time } from "framer-motion";
 
 gsap.registerPlugin(ScrollTrigger, MotionPathPlugin);
 
 export const setupScrollTimeline = (
   model: THREE.Object3D,
+  actions: { [key: string]: THREE.AnimationAction } | null,
   setActiveSection: (id: string | null) => void,
-  isMobile: boolean
+  isMobile: boolean,
+  objectRef: React.RefObject<any>
 ) => {
+  console.log("Model:", model);
+  console.log("Actions:", actions);
+
+  const gotoNormalizedTime = (
+    time: number,
+    actionName: string,
+    actions: { [key: string]: THREE.AnimationAction } | null
+  ) => {
+    if (actions) {
+      Object.values(actions).forEach((action) => {
+        if (action.getClip().name === actionName) {
+          console.log("Action Name:", action.getClip().name);
+          const duration = action.getClip().duration;
+          action.time = time * duration;
+          action.play(); // Update the action to apply the new time
+          action.paused = true;
+        }
+      });
+    }
+  };
+
   // Fonction pour animer tous les matériaux du modèle
   const animateMaterials = (properties: any) => {
     let materialCount = 0;
-
-
 
     model.traverse((node) => {
       if (node instanceof THREE.Mesh) {
@@ -34,7 +56,6 @@ export const setupScrollTimeline = (
       }
     });
   };
-
   // === Timeline pour le logo swap ===
   const logoTopbarTimeline = gsap.timeline();
 
@@ -199,9 +220,21 @@ export const setupScrollTimeline = (
     .to(["#BlocTextTitle", "#BlocTextText"], { opacity: 0 }, "<");
 
   // === Timeline pour la section features ===
+
+  const action = objectRef.current?.getAnimationActionByName("BilleAction.006");
+  console.log("Action:", objectRef);
+  let animProxy = { time: 0 };
+  const animDuration = action?.getClip().duration || 1;
+
+  if (action) {
+    action.reset().play();
+    action.paused = true;
+  }
+
+  gotoNormalizedTime(0.5, "BilleAction.006", actions);
+
   const featureSection = gsap.timeline({
     onStart: () => {
-      // Initialiser le SVG au début de l'animation
       const graphPath = document.querySelector("#graphLine");
       if (graphPath) {
         const pathLength = (graphPath as SVGPathElement).getTotalLength();
@@ -215,19 +248,13 @@ export const setupScrollTimeline = (
   });
 
   featureSection
+
     .to("#section2", { opacity: 1, y: 0, duration: isMobile ? 0.5 : 1 })
     .to(model.position, { x: 0, y: 0, duration: 1 }, "<")
     .to(model.rotation, { x: 1.5, y: -1.55, z: 1, duration: 1 }, "<")
 
     .addLabel("graphAnimation")
-    .to(
-      "#graphLine",
-      {
-        opacity: 1,
-        duration: 0.3,
-      },
-      "graphAnimation"
-    )
+    .to("#graphLine", { opacity: 1, duration: 0.3 }, "graphAnimation")
     .to(
       "#graphLine",
       {
@@ -238,12 +265,25 @@ export const setupScrollTimeline = (
       "graphAnimation+=0.1"
     )
 
-    // Animation du point avec pauses et textes
     .addLabel("dotAnimation")
     .to("#graphDot", { opacity: 1, duration: 0.3 })
 
-    // Premier segment (baissier)
-    .to("#graphDot", {
+    .to(animProxy, {
+    time: 1,
+    duration: 1,
+    ease: "power2.inOut",
+    onUpdate() {
+      const p = (1 - this.progress()) * 0.5;
+      gotoNormalizedTime(p, "BilleAction.006", actions);
+    },
+  })
+
+  // ──────────────────────────────
+  // TREND 1
+  // ──────────────────────────────
+  .to(
+    "#graphDot",
+    {
       motionPath: {
         path: "#graphLine",
         align: "#graphLine",
@@ -253,309 +293,175 @@ export const setupScrollTimeline = (
         end: 0.33,
       },
       duration: 1,
-      ease: "power1.inOut", // Easing plus doux
-    })
-    .add(() => {
-      model.traverse((node) => {
-        if (node instanceof THREE.Mesh && node.name === "Bille") {
-          const start = node.position.clone();
-          const end = new THREE.Vector3(
-            node.position.x + 0.009,
-            node.position.y, // Y reste constant
-            node.position.z + 0.015
-          );
-          // Accentuation de la courbe : calcul du point de contrôle sur la perpendiculaire
-          const curveStrength = 1.2; // Augmentez cette valeur pour accentuer l'arrondi
-          const dx = end.x - start.x;
-          const dz = end.z - start.z;
-          // Vecteur perpendiculaire dans le plan XZ
-          const perp = new THREE.Vector2(-dz, dx).normalize();
-          // Milieu du segment
-          const mid = new THREE.Vector3(
-            (start.x + end.x) / 2,
-            start.y, // Y constant
-            (start.z + end.z) / 2
-          );
-          // Offset sur la perpendiculaire
-          const offset = 0.005 * curveStrength; // Ajustez pour plus d'arrondi
-          const control = new THREE.Vector3(
-            mid.x + perp.x * offset,
-            start.y, // Y constant
-            mid.z + perp.y * offset
-          );
-          const tObj = { t: 0 };
-          gsap.to(tObj, {
-            t: 1,
-            duration: 1,
-            ease: "power1.inOut",
-            onUpdate: () => {
-              const t = tObj.t;
-              node.position.x =
-                (1 - t) * (1 - t) * start.x +
-                2 * (1 - t) * t * control.x +
-                t * t * end.x;
-              node.position.y = start.y; // Y ne change jamais
-              node.position.z =
-                (1 - t) * (1 - t) * start.z +
-                2 * (1 - t) * t * control.z +
-                t * t * end.z;
-            },
-          });
-        }
-      });
-    }, "<")
+      ease: "power1.inOut",
+    },
+    "dotAnimation"
+  )
+  .to(
+    "#trend1",
+    {
+      opacity: 1,
+      y: 0,
+      duration: 0.5,
+      ease: "power2.out",
+    },
+    ">"
+  )
+  // keep "action" synced for first third
+  .to(animProxy, {
+    time: animDuration * (1 / 3),
+    duration: 1,
+    onUpdate: () => {
+      if (action) action.time = animProxy.time;
+    },
+  })
 
-    .to(
+  // ──────────────────────────────
+  // TREND 2
+  // ──────────────────────────────
+  .to(
+    "#graphDot",
+    {
+      motionPath: {
+        path: "#graphLine",
+        align: "#graphLine",
+        autoRotate: true,
+        alignOrigin: [0.5, 0.5],
+        start: 0.33,
+        end: 0.66,
+      },
+      duration: 1,
+      ease: "power1.inOut",
+    },
+    "<"
+  )
+    .to(animProxy, {
+    time: 1,
+    duration: 1,
+    ease: "power2.inOut",
+    onUpdate() {
+      const p = this.progress() * 0.5;
+      gotoNormalizedTime(p, "BilleAction.006", actions);
+    },
+  },"<")
+
+  .to(
+    "#trend2",
+    {
+      opacity: 1,
+      y: 0,
+      duration: 0.5,
+      ease: "power2.out",
+    },
+    ">"
+  )
+
+  
+ 
+
+  // keep "action" synced for second third
+  .to(animProxy, {
+    time: animDuration * (1 / 3),
+    duration: 1,
+    onUpdate: () => {
+      if (action) action.time = animProxy.time;
+    },
+  })
+
+  // ──────────────────────────────
+  // TREND 3
+  // ──────────────────────────────
+  .to(
+    "#graphDot",
+    {
+      motionPath: {
+        path: "#graphLine",
+        align: "#graphLine",
+        autoRotate: true,
+        alignOrigin: [0.5, 0.5],
+        start: 0.66,
+        end: 1,
+      },
+      duration: 1,
+      ease: "power1.inOut",
+    },
+    "<"
+  )
+
+   .to(animProxy, {
+    time: 1,
+    duration: 1,
+    ease: "power2.inOut",
+    onUpdate() {
+      const p = 0.5 + this.progress() * 0.5; // maps 0→1 to 0.5→1
+      gotoNormalizedTime(p, "BilleAction.006", actions);
+    },
+  },"<")
+  .to(
+    "#trend3",
+    {
+      opacity: 1,
+      y: 0,
+      duration: 0.5,
+      ease: "power2.out",
+    },
+    ">"
+  )
+ 
+
+  // NEW: keep "action" synced for the final third (added per request)
+  .to(animProxy, {
+    time: animDuration * (1 / 3),
+    duration: 1,
+    onUpdate: () => {
+      if (action) action.time = animProxy.time;
+    },
+  })
+  
+
+ 
+
+  .to(
+    [
+      "#graphLine",
+      "#graphDot",
       "#trend1",
-      {
-        opacity: 1,
-        y: 0,
-        duration: 0.5,
-        ease: "power2.out",
-      },
-      ">"
-    )
-
-    // Deuxième segment (stable)
-    .to(
-      "#graphDot",
-      {
-        motionPath: {
-          path: "#graphLine",
-          align: "#graphLine",
-          autoRotate: true,
-          alignOrigin: [0.5, 0.5],
-          start: 0.33,
-          end: 0.66,
-        },
-        duration: 1,
-        ease: "power1.inOut", // Easing plus doux
-      },
-      "+=0.5"
-    )
-
-    .add(() => {
-      model.traverse((node) => {
-        if (node instanceof THREE.Mesh && node.name === "Bille") {
-          const end = node.position.clone(); // position actuelle
-          // Reprendre le même segment que l'aller, mais inversé
-          const start = new THREE.Vector3(
-            node.position.x - 0.009,
-            node.position.y, // Y reste constant
-            node.position.z - 0.015
-          );
-          // Accentuation de la courbe : calcul du point de contrôle sur la perpendiculaire
-          const curveStrength = 1.2; // Même valeur que l'aller
-          const dx = end.x - start.x;
-          const dz = end.z - start.z;
-          // Vecteur perpendiculaire dans le plan XZ
-          const perp = new THREE.Vector2(-dz, dx).normalize();
-          // Milieu du segment
-          const mid = new THREE.Vector3(
-            (start.x + end.x) / 2,
-            start.y, // Y constant
-            (start.z + end.z) / 2
-          );
-          // Offset sur la perpendiculaire
-          const offset = 0.005 * curveStrength; // Même offset
-          const control = new THREE.Vector3(
-            mid.x + perp.x * offset,
-            start.y, // Y constant
-            mid.z + perp.y * offset
-          );
-          const tObj = { t: 0 };
-          gsap.to(tObj, {
-            t: 1,
-            duration: 1,
-            ease: "power1.inOut",
-            onUpdate: () => {
-              const t = tObj.t;
-              node.position.x =
-                (1 - t) * (1 - t) * end.x +
-                2 * (1 - t) * t * control.x +
-                t * t * start.x;
-              node.position.y = start.y; // Y ne change jamais
-              node.position.z =
-                (1 - t) * (1 - t) * end.z +
-                2 * (1 - t) * t * control.z +
-                t * t * start.z;
-            },
-          });
-        }
-      });
-    }, "<")
-
-    .to(
       "#trend2",
-      {
-        opacity: 1,
-        y: 0,
-        duration: 0.5,
-        ease: "power2.out",
-      },
-      ">"
-    )
-
-    // Troisième segment (haussier)
-    .to(
-      "#graphDot",
-      {
-        motionPath: {
-          path: "#graphLine",
-          align: "#graphLine",
-          autoRotate: true,
-          alignOrigin: [0.5, 0.5],
-          start: 0.66,
-          end: 1,
-        },
-        duration: 1,
-        ease: "power1.inOut", // Easing plus doux
-      },
-      "+=0.5"
-    )
-    // Animation de la bille sur une courbe vers la droite (même logique que le segment 1 mais direction opposée)
-    .add(() => {
-      model.traverse((node) => {
-        if (node instanceof THREE.Mesh && node.name === "Bille") {
-          const start = node.position.clone();
-          // Mouvement vers la droite : X positif, Z négatif
-          const end = new THREE.Vector3(
-            node.position.x + 0.009,
-            node.position.y, // Y reste constant
-            node.position.z - 0.015
-          );
-          // Accentuation de la courbe : calcul du point de contrôle sur la perpendiculaire (vers l'extérieur)
-          const curveStrength = 1.2;
-          const dx = end.x - start.x;
-          const dz = end.z - start.z;
-          // Vecteur perpendiculaire dans le plan XZ, inversé pour aller vers l'extérieur
-          const perp = new THREE.Vector2(dz, -dx).normalize();
-          // Milieu du segment
-          const mid = new THREE.Vector3(
-            (start.x + end.x) / 2,
-            start.y,
-            (start.z + end.z) / 2
-          );
-          // Offset sur la perpendiculaire
-          const offset = 0.005 * curveStrength;
-          const control = new THREE.Vector3(
-            mid.x + perp.x * offset,
-            start.y,
-            mid.z + perp.y * offset
-          );
-          const tObj = { t: 0 };
-          gsap.to(tObj, {
-            t: 1,
-            duration: 1,
-            ease: "power1.inOut",
-            onUpdate: () => {
-              const t = tObj.t;
-              node.position.x =
-                (1 - t) * (1 - t) * start.x +
-                2 * (1 - t) * t * control.x +
-                t * t * end.x;
-              node.position.y = start.y;
-              node.position.z =
-                (1 - t) * (1 - t) * start.z +
-                2 * (1 - t) * t * control.z +
-                t * t * end.z;
-            },
-          });
-        }
-      });
-    }, "<")
-
-    .to(
       "#trend3",
-      {
-        opacity: 1,
-        y: 0,
-        duration: 0.5,
-        ease: "power2.out",
+      "#trend__title",
+    ],
+    {
+      opacity: 0,
+      duration: 0.5,
+      ease: "power2.inOut",
+      onComplete: () => {
+        gsap.set(
+          [
+            "#graphLine",
+            "#graphDot",
+            "#trend1",
+            "#trend2",
+            "#trend3",
+            "#trend__title",
+            "#trend__container",
+          ],
+          { display: "none" }
+        );
       },
-      ">"
-    )
-    .to(
-      [
-        "#graphLine",
-        "#graphDot",
-        "#trend1",
-        "#trend2",
-        "#trend3",
-        "#trend__title",
-      ],
-      {
-        opacity: 0,
-        duration: 0.5,
-        ease: "power2.inOut",
-        onComplete: () => {
-          // Optionnel : cacher les éléments après l'animation
-          gsap.set(
-            [
-              "#graphLine",
-              "#graphDot",
-              "#trend1",
-              "#trend2",
-              "#trend3",
-              "#trend__title",
-              "#trend__container",
-            ],
-            { display: "none" }
-          );
-        },
-      },
-      "+=0.5"
-    )
-    // 4e segment : retour de la bille à la position du segment 2 (avant le segment 3) avec arrondi
-    .add(() => {
-      model.traverse((node) => {
-        if (node instanceof THREE.Mesh && node.name === "Bille") {
-          // Position de départ : fin du segment 3
-          const start = node.position.clone();
-          // Position cible = position du segment 2 (avant le segment 3)
-          const end = new THREE.Vector3(
-            node.position.x - 0.009, // on annule le déplacement du segment 3
-            node.position.y,
-            node.position.z + 0.015 // on annule le déplacement du segment 3
-          );
-          // Arrondi : calcul du point de contrôle sur la perpendiculaire (même logique que les autres segments)
-          const curveStrength = 1.2;
-          const dx = end.x - start.x;
-          const dz = end.z - start.z;
-          // Vecteur perpendiculaire dans le plan XZ (vers l'extérieur du segment)
-          const perp = new THREE.Vector2(-dz, dx).normalize();
-          const mid = new THREE.Vector3(
-            (start.x + end.x) / 2,
-            start.y,
-            (start.z + end.z) / 2
-          );
-          const offset = 0.005 * curveStrength;
-          const control = new THREE.Vector3(
-            mid.x + perp.x * offset,
-            start.y,
-            mid.z + perp.y * offset
-          );
-          const tObj = { t: 0 };
-          gsap.to(tObj, {
-            t: 1,
-            duration: 1,
-            ease: "power1.inOut",
-            onUpdate: () => {
-              const t = tObj.t;
-              node.position.x =
-                (1 - t) * (1 - t) * start.x +
-                2 * (1 - t) * t * control.x +
-                t * t * end.x;
-              node.position.y = start.y;
-              node.position.z =
-                (1 - t) * (1 - t) * start.z +
-                2 * (1 - t) * t * control.z +
-                t * t * end.z;
-            },
-          });
-        }
-      });
-    }, "<");
+    },
+    "+=0.5" // small delay before fade‑out starts
+  )
+  // bille (BilleAction.006) revient à mi‑chemin en même temps que le fade‑out
+  .to(animProxy, {
+    time: 1,            // dummy value; we use progress() for mapping
+    duration: 0.5,      // même durée que le fade‑out
+    ease: "power2.inOut",
+    onUpdate() {
+      const p = 1 - this.progress() * 0.5; // 1 → 0.5
+      gotoNormalizedTime(p, "BilleAction.006", actions);
+    },
+  }, "<"); // lance exactement au début du fade‑out
+  
 
   ////// TIMELINE POUR LA SECTION Dimension /////////
 
@@ -860,10 +766,7 @@ export const setupScrollTimeline = (
     )
 
     // Pause pour la lecture
-    .to({}, { duration: 3 })
-    
-    
-    ;
+    .to({}, { duration: 3 });
 
   // === Timeline principale ===
   const masterTimeline = gsap.timeline({
@@ -871,26 +774,38 @@ export const setupScrollTimeline = (
   });
 
   masterTimeline
+
+    .addLabel("default")
     .add(sectionDefaultTimeline)
+
+    .addLabel("intro")
     .add(sectionTimelineIntro, 1)
     .add(meshTimelineIntro, "<")
     .add(logoTopbarTimeline, 2)
+
+    .addLabel("features")
     .add(featureSection)
+
+    .addLabel("dimension")
     .add(dimensionTimeline)
+
+    .addLabel("usage")
     .add(casUsageTimeline)
+
+    .addLabel("contact")
     .add(contactTimeline);
 
   const scrollTrigger = ScrollTrigger.create({
-  animation: masterTimeline,
-  trigger: "#scroll-container",
-  scroller: "#scroll-container", // 👍 INDISPENSABLE
-  start: "top top",
-  end: `+=${masterTimeline.duration() * 100}px`, // adapte la longueur du scroll
-  scrub: 1,
-  markers: true,
-});
-  console.log(masterTimeline.duration()); // pour voir combien de scroll il te faut
-  ScrollTrigger.refresh(); // 👈 Important ici
+    animation: masterTimeline,
+    trigger: "#scroll-container",
+    scroller: "#scroll-container",
+    start: "top top",
+    end: `+=${masterTimeline.duration() * 1000}px`,
+    scrub: 1,
+    markers: true,
+  });
+  console.log(masterTimeline.duration());
+  ScrollTrigger.refresh();
 
   return {
     scrollTrigger,

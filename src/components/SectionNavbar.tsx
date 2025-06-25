@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { motion } from "framer-motion";
 import { useViewport } from "../hook/useViewport";
 
+
 type Section = {
   id: string;
   label: string;
@@ -13,11 +14,7 @@ type SectionNavbarProps = {
   onSectionClick?: (id: string) => void;
 };
 
-const sectionProgressMap: Record<string, number> = {
-  section1: 0.2,
-  section2: 0.7,
-  // Ajoute d'autres sections ici
-};
+
 
 const SectionNavbar: React.FC<SectionNavbarProps> = ({
   sections,
@@ -29,15 +26,6 @@ const SectionNavbar: React.FC<SectionNavbarProps> = ({
 
   const handleSectionClick = (id: string) => {
     const container = document.getElementById("scroll-container");
-    const progress = sectionProgressMap[id];
-
-    if (container && progress != null) {
-      const maxScroll = container.scrollHeight - container.clientHeight;
-      container.scrollTo({
-        top: progress * maxScroll,
-        behavior: "smooth",
-      });
-    }
 
     onSectionClick?.(id);
     setIsMenuOpen(false);

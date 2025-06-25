@@ -1,11 +1,11 @@
-import React, { useState } from "react";
-import { useViewport } from "../hook/useViewport";
-import SectionNavbar from "./SectionNavbar";
-import { sections } from "../data/sections";
+// import React, { useState } from "react";
+// import { useViewport } from "../hook/useViewport";
+// import SectionNavbar from "./SectionNavbar";
+// import { sections } from "../data/sections";
 
 const TopBar: React.FC = () => {
-  const { isMobile } = useViewport();
-  const [activeSection, setActiveSection] = useState<string>("");
+  // const { isMobile } = useViewport();
+  // const [activeSection, setActiveSection] = useState<string>("");
 
   return (
     <>
@@ -22,7 +22,7 @@ const TopBar: React.FC = () => {
           <img src="/img/ITLogo.svg" alt="Logo IT" width="100%" height="100%" />
         </div>
 
-        {isMobile && (
+        {/* {isMobile && (
           <SectionNavbar
             sections={sections}
             activeSection={activeSection}
@@ -30,7 +30,7 @@ const TopBar: React.FC = () => {
               console.log("Clicked:", id);
             }}
           />
-        )}
+        )} */}
       </div>
     </>
   );

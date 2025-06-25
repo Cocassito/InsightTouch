@@ -1,10 +1,10 @@
 html,
 body {
-  height: 100vh; /* empêcher le scroll de faire défiler la page */
+  height: 100vh; 
   overflow: hidden; /* pas de scroll visible */
   margin: 0;
   font-family: "Raleway", sans-serif;
-  background-color: #21242b;
+  background-color: #18181B;
 }
 #scroll-container {
   position: fixed;
@@ -12,12 +12,11 @@ body {
   width: 100vw;
   height: 100vh;
   overflow-y: scroll;
-  z-index: 9999;
+  z-index: 10;
 }
 
 #scroll-content {
-  height: 7000px; /* simulate scroll length */
-  pointer-events: none; /* optionnel, éviter interactions */
+  height: 12000px;
 }
 
 #canvas-container {

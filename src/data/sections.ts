@@ -12,13 +12,38 @@ export type Section = {
   id: string;
   label: string;
   component: React.FC<SectionComponentProps>;
+  labelTimeline: string;
 };
 
-export const sections = [
-  { id: "section1", label: "Présentation", component: IntroSection },
-  { id: "section2", label: "Fonctionnalité", component: FeaturesSection },
-  { id: "section3", label: "Dimensions", component: PortabilitySection },
-  { id: "section4", label: "Cas d'usages", component: CasUsage },
-  { id: "section5", label: "Contact", component: ContactSection },
+export const sections: Section[] = [
+  {
+    id: "section1",
+    label: "Présentation",
+    component: IntroSection,
+    labelTimeline: "intro",
+  },
+  {
+    id: "section2",
+    label: "Fonctionnalité",
+    component: FeaturesSection,
+    labelTimeline: "features",
+  },
+  {
+    id: "section3",
+    label: "Dimensions",
+    component: PortabilitySection,
+    labelTimeline: "dimension",
+  },
+  {
+    id: "section4",
+    label: "Cas d'usages",
+    component: CasUsage,
+    labelTimeline: "usage",
+  },
+  {
+    id: "section5",
+    label: "Contact",
+    component: ContactSection,
+    labelTimeline: "contact",
+  },
 ];
-
